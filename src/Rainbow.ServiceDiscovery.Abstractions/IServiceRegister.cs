@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace Rainbow.ServiceDiscovery
+namespace Rainbow.ServiceDiscovery.Abstractions
 {
     /// <summary>
     /// 服务注册者

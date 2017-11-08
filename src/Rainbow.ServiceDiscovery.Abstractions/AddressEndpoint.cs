@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace Rainbow.ServiceDiscovery
+namespace Rainbow.ServiceDiscovery.Abstractions
 {
-    public class Endpoint
+    public class AddressEndpoint
     {
-        public Endpoint(string protocol, string ip, int port, string path)
+        public AddressEndpoint(string protocol, string ip, int port, string path)
         {
             this.Protocol = protocol;
             this.Ip = ip;
@@ -30,9 +29,9 @@ namespace Rainbow.ServiceDiscovery
             return new Uri(string.Format("{0}://{1}:{2}{3}", Protocol, Ip, Port, Path));
         }
 
-        public static Endpoint ToEndpoint(Uri uri)
+        public static AddressEndpoint ToEndpoint(Uri uri)
         {
-            return new Endpoint(uri.Scheme, uri.Host, uri.Port, uri.AbsolutePath);
+            return new AddressEndpoint(uri.Scheme, uri.Host, uri.Port, uri.AbsolutePath);
         }
 
     }

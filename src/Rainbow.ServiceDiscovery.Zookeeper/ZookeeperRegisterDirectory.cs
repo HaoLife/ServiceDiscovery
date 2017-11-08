@@ -1,18 +1,19 @@
-﻿using System;
+﻿using Rainbow.ServiceDiscovery.Abstractions;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
 
-namespace Rainbow.ServiceDiscovery
+namespace Rainbow.ServiceDiscovery.Zookeeper
 {
-    public class RegisterDirectory : IRegisterDirectory
+    public class ZookeeperRegisterDirectory : IRegisterDirectory
     {
-        private readonly IServiceRegisterFactory _registerFactory;
+        private readonly ZookeeperServiceDiscoverySource _source;
         private readonly List<IServiceRegister> _serviceRegisters;
 
-        public RegisterDirectory(IServiceRegisterFactory registerFactory)
+        public ZookeeperRegisterDirectory(ZookeeperServiceDiscoverySource source)
         {
-            this._registerFactory = registerFactory;
+            this._source = source;
             this._serviceRegisters = new List<IServiceRegister>();
         }
 
@@ -22,7 +23,7 @@ namespace Rainbow.ServiceDiscovery
             {
                 throw new Exception("重复添加注册节点:" + endpoint.Name);
             }
-            var register = _registerFactory.CreateRegister(endpoint);
+            var register = new ZookeeperServiceRegister(this._source.Client, endpoint);
             this._serviceRegisters.Add(register);
         }
 

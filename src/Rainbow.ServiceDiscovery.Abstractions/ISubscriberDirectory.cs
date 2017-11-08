@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace Rainbow.ServiceDiscovery
+namespace Rainbow.ServiceDiscovery.Abstractions
 {
     /// <summary>
     /// 订阅目录
     /// </summary>
     public interface ISubscriberDirectory
     {
-        void Add(SubscribeDescribe describe);
+        void Add(string serviceName);
 
         IEnumerable<IServiceSubscriber> GetSubscribers();
     }

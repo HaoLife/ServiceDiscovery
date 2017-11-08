@@ -7,6 +7,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Rainbow.ServiceDiscovery.Abstractions;
 
 namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
 {
@@ -20,6 +22,21 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .ConfigureServices((context, services) =>
+                {
+                    var app = context.Configuration.GetSection("service");
+                    var zk = context.Configuration.GetSection("service:zookeeper");
+
+                    var serviceDiscovery = new ServiceDiscoveryBuilder()
+                        .AddZookeeper(new Zookeeper.ZookeeperServiceDiscoveryOptions() { Connection = "72.21.252.250:2181", SessionTimeout = TimeSpan.Parse("00:00:30") }
+                            , (builder) =>
+                            {
+                                builder.SubscriberDirectory.Add("wp_test");
+                                //builder.ProxyMapper.Service("wp_test").Map<>
+                            })
+                        .Build();
+                    services.AddSingleton<IServiceDiscovery>(serviceDiscovery);
+                })
                 .Build();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using org.apache.zookeeper;
 using org.apache.zookeeper.data;
+using Rainbow.ServiceDiscovery.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,25 +20,36 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
         private readonly List<ServiceEndpoint> _registerEndpoints;
         private readonly Task _retryTask;
         private readonly int _sleepMilliseconds = 10000;
-        private readonly string _connection;
-        private readonly int _sessionTimeout;
+        //private readonly string _connection;
+        //private readonly int _sessionTimeout;
         private ZooKeeper _zkClient;
 
+        private readonly ZookeeperServiceDiscoverySource _source;
 
-        public ZookeeperRegistryClient(string connection, TimeSpan sessionTimeout)
+        //public ZookeeperRegistryClient(string connection, TimeSpan sessionTimeout)
+        //{
+        //    this._connection = connection;
+        //    this._sessionTimeout = (int)sessionTimeout.TotalMilliseconds;
+        //    this._zkClient = this.BuildZkClient();
+        //    this._subscribeFailureNotices = new List<ZookeeperSubscribeNotice>();
+        //    this._subscribeSuccessNotices = new List<ZookeeperSubscribeNotice>();
+        //    this._registerEndpoints = new List<ServiceEndpoint>();
+        //    this._retryTask = BuildRetryTask();
+        //}
+        public ZookeeperRegistryClient(ZookeeperServiceDiscoverySource source)
         {
-            this._connection = connection;
-            this._sessionTimeout = (int)sessionTimeout.TotalMilliseconds;
+            this._source = source;
             this._zkClient = this.BuildZkClient();
             this._subscribeFailureNotices = new List<ZookeeperSubscribeNotice>();
             this._subscribeSuccessNotices = new List<ZookeeperSubscribeNotice>();
             this._registerEndpoints = new List<ServiceEndpoint>();
             this._retryTask = BuildRetryTask();
+
         }
 
         private ZooKeeper BuildZkClient()
         {
-            return new ZooKeeper(_connection, _sessionTimeout, new SubscribeWatcher(this));
+            return new ZooKeeper(_source.Options.Connection, (int)_source.Options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
         }
 
         private Task BuildRetryTask()
@@ -66,7 +78,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             {
                 try
                 {
-                    var values = this.GetChildren(item.SubscribeDescribe);
+                    var values = this.GetChildren(item.ServiceName);
                     item.Handler(values);
                     //成功后清除,并添加到成功通知
                     this._subscribeFailureNotices.Remove(item);
@@ -130,16 +142,16 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
 
 
-        public IEnumerable<ServiceEndpoint> GetChildren(SubscribeDescribe describe)
+        public IEnumerable<ServiceEndpoint> GetChildren(string serviceName)
         {
-            var directory = describe.ServiceName.GetServiceDirectory();
+            var directory = serviceName.GetServiceDirectory();
             List<ServiceEndpoint> serviceEndpoints = new List<ServiceEndpoint>();
 
             var children = this._zkClient.getChildrenAsync(directory, true).GetAwaiter().GetResult();
             foreach (var item in children.Children)
             {
                 var uri = new Uri(Uri.UnescapeDataString(item));
-                ServiceEndpoint se = new ServiceEndpoint(describe.ServiceName, uri);
+                ServiceEndpoint se = new ServiceEndpoint(serviceName, uri);
                 serviceEndpoints.Add(se);
             }
             return serviceEndpoints;
@@ -151,13 +163,13 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
             if (string.IsNullOrEmpty(serviceName)) return;
 
-            var notice = this._subscribeSuccessNotices.FirstOrDefault(a => a.SubscribeDescribe.ServiceName == serviceName);
+            var notice = this._subscribeSuccessNotices.FirstOrDefault(a => a.ServiceName == serviceName);
             if (notice == null)
                 return;
 
             try
             {
-                var values = this.GetChildren(notice.SubscribeDescribe);
+                var values = this.GetChildren(notice.ServiceName);
                 notice.Handler(values);
             }
             catch (KeeperException.ConnectionLossException zkConnLossEx)
@@ -227,7 +239,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
             foreach (var item in this._subscribeSuccessNotices)
             {
-                var values = this.GetChildren(item.SubscribeDescribe);
+                var values = this.GetChildren(item.ServiceName);
                 item.Handler(values);
             }
 
@@ -280,7 +292,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
         {
             try
             {
-                var endpoints = this.GetChildren(subscribeNotice.SubscribeDescribe);
+                var endpoints = this.GetChildren(subscribeNotice.ServiceName);
                 _subscribeSuccessNotices.Add(subscribeNotice);
                 return endpoints;
             }

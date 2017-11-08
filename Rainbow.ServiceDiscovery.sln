@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4142F6E9-983B-4E4C-9AFD-041C2C039059}"
 EndProject
@@ -9,11 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5DFC8029-7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{E6C018E8-35A5-4B9C-89AB-542D13B0D105}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.ServiceDiscovery", "src\Rainbow.ServiceDiscovery\Rainbow.ServiceDiscovery.csproj", "{A5AFEA0C-FC26-4958-B057-C3E66EEEC958}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery", "src\Rainbow.ServiceDiscovery\Rainbow.ServiceDiscovery.csproj", "{A5AFEA0C-FC26-4958-B057-C3E66EEEC958}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.ServiceDiscovery.Zookeeper", "src\Rainbow.ServiceDiscovery.Zookeeper\Rainbow.ServiceDiscovery.Zookeeper.csproj", "{C395189E-E181-48E3-8262-32C2FC7CDF01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Zookeeper", "src\Rainbow.ServiceDiscovery.Zookeeper\Rainbow.ServiceDiscovery.Zookeeper.csproj", "{C395189E-E181-48E3-8262-32C2FC7CDF01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.ServiceDiscovery.SamplesServiceRegister", "samples\Rainbow.ServiceDiscovery.SamplesServiceRegister\Rainbow.ServiceDiscovery.SamplesServiceRegister.csproj", "{213C9F84-247E-4625-BDDD-A04A11F434E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.SamplesServiceRegister", "samples\Rainbow.ServiceDiscovery.SamplesServiceRegister\Rainbow.ServiceDiscovery.SamplesServiceRegister.csproj", "{213C9F84-247E-4625-BDDD-A04A11F434E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.ServiceDiscovery.Abstractions", "src\Rainbow.ServiceDiscovery.Abstractions\Rainbow.ServiceDiscovery.Abstractions.csproj", "{54182037-1020-42A3-864A-1215F4EED17C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{213C9F84-247E-4625-BDDD-A04A11F434E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{213C9F84-247E-4625-BDDD-A04A11F434E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{213C9F84-247E-4625-BDDD-A04A11F434E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54182037-1020-42A3-864A-1215F4EED17C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54182037-1020-42A3-864A-1215F4EED17C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54182037-1020-42A3-864A-1215F4EED17C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54182037-1020-42A3-864A-1215F4EED17C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +47,7 @@ Global
 		{A5AFEA0C-FC26-4958-B057-C3E66EEEC958} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
 		{C395189E-E181-48E3-8262-32C2FC7CDF01} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
 		{213C9F84-247E-4625-BDDD-A04A11F434E3} = {E6C018E8-35A5-4B9C-89AB-542D13B0D105}
+		{54182037-1020-42A3-864A-1215F4EED17C} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8FBCB90A-4D08-46E2-9CF4-DC54C728A3ED}

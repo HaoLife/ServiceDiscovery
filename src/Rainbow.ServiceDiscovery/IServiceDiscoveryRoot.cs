@@ -1,13 +1,13 @@
 ﻿using Rainbow.ServiceDiscovery.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Rainbow.ServiceDiscovery
 {
-    public interface IServiceLoadBalancing
+    public interface IServiceDiscoveryRoot : IServiceDiscovery
     {
-        ServiceEndpoint Find(string serviceName);
+        void Reload();
+        IEnumerable<IServiceDiscoveryProvider> Providers { get; }
     }
 }

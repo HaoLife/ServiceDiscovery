@@ -8,6 +8,7 @@ using System.Text;
 using Rainbow.ServiceDiscovery.Attributes;
 using Rainbow.ServiceDiscovery.Formatters;
 using Rainbow.ServiceDiscovery.Routes;
+using Rainbow.ServiceDiscovery.Abstractions;
 
 namespace Rainbow.ServiceDiscovery
 {

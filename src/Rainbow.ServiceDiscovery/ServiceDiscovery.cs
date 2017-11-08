@@ -1,35 +1,69 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using Rainbow.ServiceDiscovery.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Rainbow.ServiceDiscovery
 {
-    public class ServiceDiscovery : IServiceDiscovery
+    public class ServiceDiscovery : IServiceDiscoveryRoot
     {
-        private readonly ServiceDiscoveryOptions _options;
-        private readonly IServiceLoadBalancing _serviceLoadBalancing;
-        private readonly IServiceProxyGenerator _serviceProxyGenerator;
-        public ServiceDiscovery(ServiceDiscoveryOptions options, IServiceLoadBalancing serviceLoadBalancing, IServiceProxyGenerator serviceProxyGenerator)
+        private IList<IServiceDiscoveryProvider> _providers;
+        private ServiceDiscoveryReloadToken _changeToken = new ServiceDiscoveryReloadToken();
+
+        public ServiceDiscovery(IList<IServiceDiscoveryProvider> providers)
         {
-            this._options = options;
-            this._serviceLoadBalancing = serviceLoadBalancing;
-            this._serviceProxyGenerator = serviceProxyGenerator;
+            if (providers == null)
+            {
+                throw new ArgumentNullException(nameof(providers));
+            }
+
+            _providers = providers;
+            foreach (var p in providers)
+            {
+                p.Load();
+                ChangeToken.OnChange(() => p.GetReloadToken(), () => RaiseChanged());
+            }
+
         }
 
-        public virtual ServiceEndpoint GetService(string serviceName)
+        public IEnumerable<IServiceDiscoveryProvider> Providers => _providers;
+
+        public T GetProxy<T>()
         {
-            return this._serviceLoadBalancing.Find(serviceName);
+            throw new NotImplementedException();
         }
 
-        public virtual T GetProxy<T>()
+        public ServiceEndpoint GetService(string serviceName)
         {
-            var mapping = this._options.ProxyMapper.GetMappings().Where(a => a.MapType == typeof(T)).FirstOrDefault();
-            if (mapping == null) throw new Exception("没有可映射的服务" + typeof(T).Name);
+            foreach (var provider in _providers.Reverse())
+            {
+                ServiceEndpoint value;
 
-            var point = this.GetService(mapping.ServiceName);
-            //创建代理服务
-            return _serviceProxyGenerator.CreateServiceProxy<T>(point);
+                if (provider.TryGet(serviceName, out value))
+                {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
+        public void Reload()
+        {
+            foreach (var provider in _providers)
+            {
+                provider.Load();
+            }
+            RaiseChanged();
+        }
+
+        private void RaiseChanged()
+        {
+            var previousToken = Interlocked.Exchange(ref _changeToken, new ServiceDiscoveryReloadToken());
+            previousToken.OnReload();
         }
     }
 }
