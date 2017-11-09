@@ -9,35 +9,24 @@ namespace Rainbow.ServiceDiscovery
 {
     public class PollingServiceLoadBalancing : IServiceLoadBalancing
     {
-        private readonly ISubscriberDirectory _subscriberDirectory;
         private ConcurrentDictionary<string, Sequence> _cache = new ConcurrentDictionary<string, Sequence>();
 
-        public PollingServiceLoadBalancing(ISubscriberDirectory subscriberDirectory)
+        public bool TryGet(IServiceSubscriber subscriber, out ServiceEndpoint endpoint)
         {
-            this._subscriberDirectory = subscriberDirectory;
-        }
-
-        public ServiceEndpoint Find(string serviceName)
-        {
-            var subscriber = this._subscriberDirectory.GetSubscribers().FirstOrDefault(a => a.Name == serviceName);
-            if (subscriber == null)
-            {
-                throw new Exception("没有该服务的订阅" + serviceName);
-            }
-
+            endpoint = null;
             var points = subscriber.GetEndpoints();
-
             if (!points.Any())
             {
-                throw new Exception("没有可用的服务" + serviceName);
+                return false;
             }
 
-            var seq = _cache.GetOrAdd(serviceName, new Sequence());
+            var seq = _cache.GetOrAdd(subscriber.Name, new Sequence());
             var index = (int)(seq.Value % points.Count());
             seq.Value++;
-            return points.ElementAt(index);
-        }
+            endpoint = points.ElementAt(index);
 
+            return true;
+        }
 
         private class Sequence
         {

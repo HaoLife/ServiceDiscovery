@@ -10,87 +10,101 @@ using System.Threading;
 using System.Threading.Tasks;
 using static org.apache.zookeeper.Watcher.Event;
 using static org.apache.zookeeper.ZooDefs;
+using Microsoft.Extensions.Primitives;
+using System.Collections.Concurrent;
 
 namespace Rainbow.ServiceDiscovery.Zookeeper
 {
     public class ZookeeperRegistryClient : IZookeeperRegistryClient
     {
-        private readonly List<ZookeeperSubscribeNotice> _subscribeFailureNotices;
-        private readonly List<ZookeeperSubscribeNotice> _subscribeSuccessNotices;
         private readonly List<ServiceEndpoint> _registerEndpoints;
-        private readonly Task _retryTask;
         private readonly int _sleepMilliseconds = 10000;
-        //private readonly string _connection;
-        //private readonly int _sessionTimeout;
         private ZooKeeper _zkClient;
+        private readonly IDictionary<string, ServiceDiscoveryReloadToken> _changeTokens = new SortedDictionary<string, ServiceDiscoveryReloadToken>(StringComparer.OrdinalIgnoreCase);
 
         private readonly ZookeeperServiceDiscoverySource _source;
-
-        //public ZookeeperRegistryClient(string connection, TimeSpan sessionTimeout)
-        //{
-        //    this._connection = connection;
-        //    this._sessionTimeout = (int)sessionTimeout.TotalMilliseconds;
-        //    this._zkClient = this.BuildZkClient();
-        //    this._subscribeFailureNotices = new List<ZookeeperSubscribeNotice>();
-        //    this._subscribeSuccessNotices = new List<ZookeeperSubscribeNotice>();
-        //    this._registerEndpoints = new List<ServiceEndpoint>();
-        //    this._retryTask = BuildRetryTask();
-        //}
         public ZookeeperRegistryClient(ZookeeperServiceDiscoverySource source)
         {
             this._source = source;
             this._zkClient = this.BuildZkClient();
-            this._subscribeFailureNotices = new List<ZookeeperSubscribeNotice>();
-            this._subscribeSuccessNotices = new List<ZookeeperSubscribeNotice>();
             this._registerEndpoints = new List<ServiceEndpoint>();
-            this._retryTask = BuildRetryTask();
 
         }
+
+
+
+        public void Publish(ServiceEndpoint endpoint)
+        {
+            this.Create(endpoint);
+            _registerEndpoints.Add(endpoint);
+        }
+
+        public void Unpublish(ServiceEndpoint endpoint)
+        {
+            this.Delete(endpoint);
+            _registerEndpoints.RemoveAll(a => a.Name == endpoint.Name);
+        }
+
+        public IChangeToken GetReloadToken(string serviceName)
+        {
+
+            var directory = serviceName.GetServiceDirectory();
+
+            //订阅变更，如果没有节点，直接抛出异常
+            this._zkClient.getChildrenAsync(directory, true).GetAwaiter().GetResult();
+
+            ServiceDiscoveryReloadToken value = new ServiceDiscoveryReloadToken();
+            if (_changeTokens.ContainsKey(serviceName))
+            {
+                _changeTokens[serviceName] = value;
+            }
+            else
+            {
+                _changeTokens.Add(serviceName, value);
+            }
+
+            return value;
+        }
+
+        public IEnumerable<ServiceEndpoint> GetChildren(string serviceName)
+        {
+            var directory = serviceName.GetServiceDirectory();
+            List<ServiceEndpoint> serviceEndpoints = new List<ServiceEndpoint>();
+
+            try
+            {
+
+                var children = this._zkClient.getChildrenAsync(directory).GetAwaiter().GetResult();
+                foreach (var item in children.Children)
+                {
+                    var uri = new Uri(Uri.UnescapeDataString(item));
+                    ServiceEndpoint se = new ServiceEndpoint(serviceName, uri);
+                    serviceEndpoints.Add(se);
+                }
+            }
+            catch (KeeperException.NodeExistsException zkExistsEx)
+            {
+                //如果节点存在，不处理
+            }
+            catch (KeeperException.ConnectionLossException zkConnLossEx)
+            {
+                //连接需要准备时间，在未连接成功前使用会抛出这个异常，进行休眠一会重连吧
+                System.Threading.Thread.Sleep(300);
+                return GetChildren(serviceName);
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return serviceEndpoints;
+        }
+
 
         private ZooKeeper BuildZkClient()
         {
-            return new ZooKeeper(_source.Options.Connection, (int)_source.Options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
+            return new ZooKeeper(_source.Connection, (int)_source.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
         }
 
-        private Task BuildRetryTask()
-        {
-            Task task = new Task(() =>
-            {
-                while (true)
-                {
-                    Thread.Sleep(_sleepMilliseconds);
-                    FailureRetry();
-                }
-            }, TaskCreationOptions.LongRunning);
-            task.Start();
-            return task;
-        }
-
-
-        //失败重试
-        public void FailureRetry()
-        {
-            if (!this._subscribeFailureNotices.Any()) return;
-
-            var items = this._subscribeFailureNotices.ToArray();
-
-            foreach (var item in items)
-            {
-                try
-                {
-                    var values = this.GetChildren(item.ServiceName);
-                    item.Handler(values);
-                    //成功后清除,并添加到成功通知
-                    this._subscribeFailureNotices.Remove(item);
-                    this._subscribeSuccessNotices.Add(item);
-                }
-                catch (Exception ex)
-                {
-                    //失败无视
-                }
-            }
-
-        }
 
 
         public void Create(ServiceEndpoint endpoint)
@@ -142,20 +156,6 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
 
 
-        public IEnumerable<ServiceEndpoint> GetChildren(string serviceName)
-        {
-            var directory = serviceName.GetServiceDirectory();
-            List<ServiceEndpoint> serviceEndpoints = new List<ServiceEndpoint>();
-
-            var children = this._zkClient.getChildrenAsync(directory, true).GetAwaiter().GetResult();
-            foreach (var item in children.Children)
-            {
-                var uri = new Uri(Uri.UnescapeDataString(item));
-                ServiceEndpoint se = new ServiceEndpoint(serviceName, uri);
-                serviceEndpoints.Add(se);
-            }
-            return serviceEndpoints;
-        }
 
         public void ChildrenChange(WatchedEvent @event)
         {
@@ -163,24 +163,11 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
             if (string.IsNullOrEmpty(serviceName)) return;
 
-            var notice = this._subscribeSuccessNotices.FirstOrDefault(a => a.ServiceName == serviceName);
-            if (notice == null)
-                return;
+            ServiceDiscoveryReloadToken token;
 
-            try
-            {
-                var values = this.GetChildren(notice.ServiceName);
-                notice.Handler(values);
-            }
-            catch (KeeperException.ConnectionLossException zkConnLossEx)
-            {
-                //session 超时了，客户端已经关闭照成的，不要做处理，之后由超时事件做通知，重新创建client，并重新注册和订阅
-            }
-            catch (Exception ex)
-            {
-                WriteLog(@event, ex);
-            }
+            if (!_changeTokens.TryGetValue(serviceName, out token)) return;
 
+            token.OnReload();
 
         }
 
@@ -197,8 +184,9 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
         }
 
-        private void WriteLog(WatchedEvent @event, Exception ex = null)
+        private void NodeDisconnection(WatchedEvent @event)
         {
+            //写入日志吧
             var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log");
             Directory.CreateDirectory(dir);
 
@@ -210,21 +198,9 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             sb.AppendLine("path:" + @event.getPath());
             sb.AppendLine("state:" + @event.getState());
             sb.AppendLine("type:" + @event.get_Type());
-            if (ex != null)
-            {
-                sb.AppendLine(ex.Message);
-                sb.AppendLine(ex.StackTrace);
-            }
             sb.AppendLine("");
 
             File.AppendAllText(file, sb.ToString());
-
-        }
-
-        private void NodeDisconnection(WatchedEvent @event)
-        {
-            //写入日志吧
-            WriteLog(@event);
         }
 
         private void NodeExpire(WatchedEvent @event)
@@ -237,12 +213,10 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
                 this.Create(item);
             }
 
-            foreach (var item in this._subscribeSuccessNotices)
+            foreach (var token in _changeTokens.Values)
             {
-                var values = this.GetChildren(item.ServiceName);
-                item.Handler(values);
+                token.OnReload();
             }
-
         }
 
         private void Connection(WatchedEvent @event)
@@ -275,35 +249,6 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
 
 
-        public void Publish(ServiceEndpoint endpoint)
-        {
-            this.Create(endpoint);
-            _registerEndpoints.Add(endpoint);
-        }
-
-        public void Unpublish(ServiceEndpoint endpoint)
-        {
-            this.Delete(endpoint);
-            _registerEndpoints.RemoveAll(a => a.Name == endpoint.Name);
-        }
-
-
-        public IEnumerable<ServiceEndpoint> Subscribe(ZookeeperSubscribeNotice subscribeNotice)
-        {
-            try
-            {
-                var endpoints = this.GetChildren(subscribeNotice.ServiceName);
-                _subscribeSuccessNotices.Add(subscribeNotice);
-                return endpoints;
-            }
-            catch (Exception ex)
-            {
-                _subscribeFailureNotices.Add(subscribeNotice);
-                return new List<ServiceEndpoint>();
-            }
-
-        }
-
         private class SubscribeWatcher : Watcher
         {
             private readonly ZookeeperRegistryClient _client;
@@ -317,7 +262,6 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
                 return Task.Run(() =>
                 {
                     this._client.NodeChangeNotice(@event);
-
                 });
             }
         }

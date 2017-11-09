@@ -7,6 +7,10 @@ namespace Rainbow.ServiceDiscovery
 {
     public class ServiceDiscoveryBuilder : IServiceDiscoveryBuilder
     {
+        public ServiceDiscoveryBuilder()
+        {
+
+        }
 
         public IList<IServiceDiscoverySource> Sources { get; } = new List<IServiceDiscoverySource>();
 
@@ -31,5 +35,6 @@ namespace Rainbow.ServiceDiscovery
             }
             return new ServiceDiscovery(providers);
         }
+
     }
 }

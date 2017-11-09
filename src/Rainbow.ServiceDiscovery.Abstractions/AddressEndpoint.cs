@@ -6,6 +6,7 @@ namespace Rainbow.ServiceDiscovery.Abstractions
 {
     public class AddressEndpoint
     {
+
         public AddressEndpoint(string protocol, string ip, int port, string path)
         {
             this.Protocol = protocol;
@@ -29,10 +30,15 @@ namespace Rainbow.ServiceDiscovery.Abstractions
             return new Uri(string.Format("{0}://{1}:{2}{3}", Protocol, Ip, Port, Path));
         }
 
-        public static AddressEndpoint ToEndpoint(Uri uri)
+        public static AddressEndpoint Parse(Uri uri)
         {
             return new AddressEndpoint(uri.Scheme, uri.Host, uri.Port, uri.AbsolutePath);
         }
 
+
+        public static AddressEndpoint Parse(string url)
+        {
+            return Parse(new Uri(url));
+        }
     }
 }

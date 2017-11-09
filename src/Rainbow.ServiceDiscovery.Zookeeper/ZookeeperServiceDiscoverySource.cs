@@ -7,31 +7,23 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 {
     public class ZookeeperServiceDiscoverySource : IServiceDiscoverySource
     {
-        public ZookeeperServiceDiscoveryOptions Options { get; }
-        public IZookeeperRegistryClient Client { get; }
-        public IServiceEndpointStore Store { get; }
-        public ZookeeperSubscriberDirectory SubscriberDirectory { get; }
-        public IRegisterDirectory RegisterDirectory { get; }
-        public IProxyMapper ProxyMapper { get; }
-        public IServiceProxyGenerator ProxyGenerator { get; }
+        public IServiceEndpointStore Store { get; set; }
         public IServiceLoadBalancing LoadBalancing { get; set; }
 
-        public ZookeeperServiceDiscoverySource(ZookeeperServiceDiscoveryOptions options)
-        {
-            this.Options = options;
-            this.Client = new ZookeeperRegistryClient(this);
-            this.Store = new MemoryServiceEndpointStore();
-            this.SubscriberDirectory = new ZookeeperSubscriberDirectory(this);
-            this.RegisterDirectory = new ZookeeperRegisterDirectory(this);
-            this.ProxyMapper = new ProxyMapper();
-            this.ProxyGenerator = new HttpDynamicServiceProxyGenerator();
-            this.LoadBalancing = new PollingServiceLoadBalancing(this.SubscriberDirectory);
-        }
+        public string Connection { get; set; }
+        public TimeSpan SessionTimeout { get; set; }
+        public List<string> Subscribes { get; set; }
+        public List<ServiceEndpoint> Registers { get; set; }
 
+        public ZookeeperServiceDiscoverySource()
+        {
+            this.LoadBalancing = new PollingServiceLoadBalancing();
+            this.Store = new MemoryServiceEndpointStore();
+        }
 
         public IServiceDiscoveryProvider Build(IServiceDiscoveryBuilder builder)
         {
-            return new ZookeeperServiceDiscoveryProvider(this);
+            return new ZookeeperServiceDiscoveryProvider(new ZookeeperRegistryClient(this), this);
         }
     }
 }

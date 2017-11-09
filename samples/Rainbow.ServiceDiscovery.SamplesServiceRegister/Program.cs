@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Rainbow.ServiceDiscovery.Abstractions;
+using Rainbow.ServiceDiscovery.Zookeeper;
 
 namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
 {
@@ -26,14 +27,16 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
                 {
                     var app = context.Configuration.GetSection("service");
                     var zk = context.Configuration.GetSection("service:zookeeper");
+                    var appname = app.GetValue<string>("name");
+                    var url = app.GetValue<string>("url");
+
+                    ServiceEndpoint endpoint = new ServiceEndpoint(appname, new Uri(url));
+
+                    var conn = zk.GetValue<string>("Connection");
+                    var timeout = zk.GetValue<TimeSpan>("SessionTimeout");
 
                     var serviceDiscovery = new ServiceDiscoveryBuilder()
-                        .AddZookeeper(new Zookeeper.ZookeeperServiceDiscoveryOptions() { Connection = "72.21.252.250:2181", SessionTimeout = TimeSpan.Parse("00:00:30") }
-                            , (builder) =>
-                            {
-                                builder.SubscriberDirectory.Add("wp_test");
-                                //builder.ProxyMapper.Service("wp_test").Map<>
-                            })
+                        .AddZookeeper(conn, timeout, new List<string>() { appname }, endpoint)
                         .Build();
                     services.AddSingleton<IServiceDiscovery>(serviceDiscovery);
                 })

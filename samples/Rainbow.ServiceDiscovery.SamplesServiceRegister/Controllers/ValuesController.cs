@@ -3,16 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Rainbow.ServiceDiscovery.Abstractions;
+using Microsoft.Extensions.Configuration;
 
 namespace Rainbow.ServiceDiscovery.SamplesServiceRegister.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        private readonly IServiceDiscovery _serviceDiscovery;
+        private readonly IConfiguration _config;
+        public ValuesController(IServiceDiscovery serviceDiscovery, IConfiguration config)
+        {
+            this._serviceDiscovery = serviceDiscovery;
+            this._config = config;
+        }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            var appName = this._config.GetValue<string>("service:name");
+            var a = this._serviceDiscovery.GetService(appName);
             return new string[] { "value1", "value2" };
         }
 

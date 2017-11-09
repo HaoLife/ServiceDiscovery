@@ -9,6 +9,7 @@ namespace Rainbow.ServiceDiscovery.Abstractions
     /// </summary>
     public class ServiceEndpoint
     {
+
         public ServiceEndpoint(string name, AddressEndpoint endpoint)
             : this(name, "1.0", endpoint)
         {
@@ -23,7 +24,7 @@ namespace Rainbow.ServiceDiscovery.Abstractions
 
 
         public ServiceEndpoint(string name, Uri uri)
-            : this(name, "1.0", AddressEndpoint.ToEndpoint(uri))
+            : this(name, "1.0", AddressEndpoint.Parse(uri))
         {
         }
 

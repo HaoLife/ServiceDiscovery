@@ -1,4 +1,5 @@
-﻿using Rainbow.ServiceDiscovery.Abstractions;
+﻿using Microsoft.Extensions.Primitives;
+using Rainbow.ServiceDiscovery.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,29 +9,29 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 {
     public class ZookeeperServiceSubscriber : IServiceSubscriber
     {
-        private readonly string _serviceName;
         private readonly IZookeeperRegistryClient _zkClient;
         private readonly IServiceEndpointStore _serviceEndpointStore;
 
         public ZookeeperServiceSubscriber(string serviceName, IZookeeperRegistryClient zkClient, IServiceEndpointStore serviceEndpointStore)
         {
-            this._serviceName = serviceName;
+            this.Name = serviceName;
             this._zkClient = zkClient;
             this._serviceEndpointStore = serviceEndpointStore;
         }
-        public string Name => this._serviceName;
+        public string Name { get; }
 
-        private void ChangeEndpoint(IEnumerable<ServiceEndpoint> endpoints)
-        {
-            this._serviceEndpointStore.Set(this.Name, endpoints);
-
-        }
 
         public void Subscribe()
         {
-            var values = _zkClient.Subscribe(new ZookeeperSubscribeNotice(this.Name, ChangeEndpoint));
-            ChangeEndpoint(values);
+            RaiseChanged();
+            ChangeToken.OnChange(() => this._zkClient.GetReloadToken(this.Name), () => RaiseChanged());
 
+        }
+
+        public void RaiseChanged()
+        {
+            var endpoints = this._zkClient.GetChildren(this.Name);
+            this._serviceEndpointStore.Set(this.Name, endpoints);
         }
 
         public IEnumerable<ServiceEndpoint> GetEndpoints()

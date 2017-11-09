@@ -10,61 +10,59 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
     public class ZookeeperServiceDiscoveryProvider : IServiceDiscoveryProvider
     {
         private readonly ZookeeperServiceDiscoverySource _source;
+        private ServiceDiscoveryReloadToken _reloadToken = new ServiceDiscoveryReloadToken();
+        public IZookeeperRegistryClient Client { get; }
+        public List<IServiceRegister> Registers { get; }
+        public List<IServiceSubscriber> Subscribes { get; }
 
-        public ZookeeperServiceDiscoveryProvider(ZookeeperServiceDiscoverySource source)
+
+        public ZookeeperServiceDiscoveryProvider(ZookeeperRegistryClient client, ZookeeperServiceDiscoverySource source)
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
             this._source = source;
-        }
-
-        public T GetProxy<T>()
-        {
-
-            var mapping = this._source.ProxyMapper.GetMappings().Where(a => a.MapType == typeof(T)).FirstOrDefault();
-            if (mapping == null) throw new Exception("没有可映射的服务" + typeof(T).Name);
-            ServiceEndpoint endpoint;
-            if(!this.TryGet(mapping.ServiceName, out endpoint))
-            {
-                throw new Exception("没有找到服务");
-            }
-            //创建代理服务
-            return this._source.ProxyGenerator.CreateServiceProxy<T>(endpoint);
+            this.Client = client;
+            this.Registers = new List<IServiceRegister>();
+            this.Subscribes = new List<IServiceSubscriber>();
         }
 
         public IChangeToken GetReloadToken()
         {
-            throw new NotImplementedException();
+            return _reloadToken;
         }
 
         public void Load()
         {
-            foreach (var item in this._source.RegisterDirectory.GetRegisters())
+            this.Registers.Clear();
+            this.Subscribes.Clear();
+
+            foreach (var item in this._source.Registers)
             {
-                item.Register();
+                var register = new ZookeeperServiceRegister(this.Client, item);
+                register.Register();
+                this.Registers.Add(register);
             }
 
-            foreach (var item in this._source.SubscriberDirectory.GetSubscribers())
+            foreach (var item in this._source.Subscribes)
             {
-                item.Subscribe();
+                var subscriber = new ZookeeperServiceSubscriber(item, this.Client, _source.Store);
+                subscriber.Subscribe();
+                this.Subscribes.Add(subscriber);
             }
-
         }
 
         public bool TryGet(string key, out ServiceEndpoint value)
         {
-            try
-            {
-                value = this._source.LoadBalancing.Find(key);
-                return true;
-            }
-            catch (Exception ex)
+            IServiceSubscriber subscriber = this.Subscribes.FirstOrDefault(a => a.Name == key);
+            if (subscriber == null)
             {
                 value = null;
                 return false;
             }
+            return _source.LoadBalancing.TryGet(subscriber, out value);
         }
+
     }
 }

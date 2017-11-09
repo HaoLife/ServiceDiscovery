@@ -11,7 +11,7 @@ namespace Rainbow.ServiceDiscovery
     public class ServiceDiscovery : IServiceDiscoveryRoot
     {
         private IList<IServiceDiscoveryProvider> _providers;
-        private ServiceDiscoveryReloadToken _changeToken = new ServiceDiscoveryReloadToken();
+        private ServiceDiscoveryReloadToken _reloadToken = new ServiceDiscoveryReloadToken();
 
         public ServiceDiscovery(IList<IServiceDiscoveryProvider> providers)
         {
@@ -31,24 +31,33 @@ namespace Rainbow.ServiceDiscovery
 
         public IEnumerable<IServiceDiscoveryProvider> Providers => _providers;
 
-        public T GetProxy<T>()
+        public bool TryGet(string serviceName, out ServiceEndpoint value)
         {
-            throw new NotImplementedException();
-        }
-
-        public ServiceEndpoint GetService(string serviceName)
-        {
+            value = null;
             foreach (var provider in _providers.Reverse())
             {
-                ServiceEndpoint value;
-
                 if (provider.TryGet(serviceName, out value))
                 {
-                    return value;
+                    return true;
                 }
             }
+            return false;
+        }
+        public ServiceEndpoint GetService(string serviceName)
+        {
+            ServiceEndpoint result;
+            if (!this.TryGet(serviceName, out result))
+            {
+                throw new Exception("没有找到" + serviceName + "服务");
+            }
+            return result;
+        }
 
-            return null;
+
+        private void RaiseChanged()
+        {
+            var previousToken = Interlocked.Exchange(ref _reloadToken, new ServiceDiscoveryReloadToken());
+            previousToken.OnReload();
         }
 
         public void Reload()
@@ -58,12 +67,6 @@ namespace Rainbow.ServiceDiscovery
                 provider.Load();
             }
             RaiseChanged();
-        }
-
-        private void RaiseChanged()
-        {
-            var previousToken = Interlocked.Exchange(ref _changeToken, new ServiceDiscoveryReloadToken());
-            previousToken.OnReload();
         }
     }
 }

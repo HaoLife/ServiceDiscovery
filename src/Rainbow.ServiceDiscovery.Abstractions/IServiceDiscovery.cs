@@ -8,6 +8,7 @@ namespace Rainbow.ServiceDiscovery.Abstractions
     {
         ServiceEndpoint GetService(string serviceName);
 
-        T GetProxy<T>();
+        bool TryGet(string serviceName, out ServiceEndpoint value);
+
     }
 }
