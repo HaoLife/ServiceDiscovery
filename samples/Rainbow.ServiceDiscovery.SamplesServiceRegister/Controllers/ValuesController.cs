@@ -23,8 +23,8 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            var appName = this._config.GetValue<string>("service:name");
-            var a = this._serviceDiscovery.GetService(appName);
+            var appName = this._config.GetValue<string>("service:Application:name");
+            var a = this._serviceDiscovery.GetEndpoints(appName);
             return new string[] { "value1", "value2" };
         }
 

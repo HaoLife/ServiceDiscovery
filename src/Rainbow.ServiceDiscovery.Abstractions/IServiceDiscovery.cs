@@ -6,9 +6,8 @@ namespace Rainbow.ServiceDiscovery.Abstractions
 {
     public interface IServiceDiscovery
     {
-        ServiceEndpoint GetService(string serviceName);
-
-        bool TryGet(string serviceName, out ServiceEndpoint value);
+        IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName);
+        IServiceEndpoint GetLocalEndpoint();
 
     }
 }

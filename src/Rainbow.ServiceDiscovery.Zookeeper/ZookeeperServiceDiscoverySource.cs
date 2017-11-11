@@ -1,29 +1,25 @@
-﻿using Rainbow.ServiceDiscovery.Abstractions;
+﻿using Microsoft.Extensions.Logging;
+using Rainbow.ServiceDiscovery.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Rainbow.ServiceDiscovery.Zookeeper
 {
     public class ZookeeperServiceDiscoverySource : IServiceDiscoverySource
     {
-        public IServiceEndpointStore Store { get; set; }
-        public IServiceLoadBalancing LoadBalancing { get; set; }
+        public ZookeeperServiceDiscoveryOptions Options { get; }
 
-        public string Connection { get; set; }
-        public TimeSpan SessionTimeout { get; set; }
-        public List<string> Subscribes { get; set; }
-        public List<ServiceEndpoint> Registers { get; set; }
-
-        public ZookeeperServiceDiscoverySource()
+        public ZookeeperServiceDiscoverySource(ZookeeperServiceDiscoveryOptions options)
         {
-            this.LoadBalancing = new PollingServiceLoadBalancing();
-            this.Store = new MemoryServiceEndpointStore();
+            this.Options = options;
         }
 
-        public IServiceDiscoveryProvider Build(IServiceDiscoveryBuilder builder)
+        public IServiceDiscoveryProvider Build(IServiceProvider privider)
         {
-            return new ZookeeperServiceDiscoveryProvider(new ZookeeperRegistryClient(this), this);
+            var factory = privider.GetRequiredService<ILoggerFactory>();
+            return new ZookeeperServiceDiscoveryProvider(this, factory);
         }
     }
 }

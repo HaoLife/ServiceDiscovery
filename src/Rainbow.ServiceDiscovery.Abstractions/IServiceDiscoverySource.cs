@@ -6,6 +6,6 @@ namespace Rainbow.ServiceDiscovery.Abstractions
 {
     public interface IServiceDiscoverySource
     {
-        IServiceDiscoveryProvider Build(IServiceDiscoveryBuilder builder);
+        IServiceDiscoveryProvider Build(IServiceProvider privider);
     }
 }

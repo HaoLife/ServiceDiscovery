@@ -23,23 +23,6 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .ConfigureServices((context, services) =>
-                {
-                    var app = context.Configuration.GetSection("service");
-                    var zk = context.Configuration.GetSection("service:zookeeper");
-                    var appname = app.GetValue<string>("name");
-                    var url = app.GetValue<string>("url");
-
-                    ServiceEndpoint endpoint = new ServiceEndpoint(appname, new Uri(url));
-
-                    var conn = zk.GetValue<string>("Connection");
-                    var timeout = zk.GetValue<TimeSpan>("SessionTimeout");
-
-                    var serviceDiscovery = new ServiceDiscoveryBuilder()
-                        .AddZookeeper(conn, timeout, new List<string>() { appname }, endpoint)
-                        .Build();
-                    services.AddSingleton<IServiceDiscovery>(serviceDiscovery);
-                })
                 .Build();
     }
 }

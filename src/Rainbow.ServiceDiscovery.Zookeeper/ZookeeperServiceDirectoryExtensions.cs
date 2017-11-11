@@ -5,13 +5,12 @@ using System.Text;
 
 namespace Rainbow.ServiceDiscovery.Zookeeper
 {
-    public static class ZookeeperServiceDirectoryExtensions
+    internal static class ZookeeperServiceDirectoryExtensions
     {
-        private static string _nameService = "nameservice";
 
         public static string GetServiceDirectory(this string serviceName)
         {
-            return string.Format("/{0}/{1}", _nameService, serviceName);
+            return string.Format("/{0}/{1}", ZookeeperDefaults.NameService, serviceName);
         }
 
         public static string GetServiceNameByPath(this string path)
@@ -25,5 +24,6 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
             return nodes[2];
         }
+
     }
 }

@@ -70,7 +70,7 @@ namespace Rainbow.ServiceDiscovery.Proxy.Http
         {
             RouteContext routeContext = this.BuildRouteContext(context);
 
-            UriBuilder builder = new UriBuilder(context.ServiceEndpoint.Endpoint.ToUri());
+            UriBuilder builder = new UriBuilder(context.ServiceEndpoint.ToUri());
 
             builder.Path = string.Join("/", builder.Path.Substring(1), routeContext.ServicePath, routeContext.ActionPath);
 

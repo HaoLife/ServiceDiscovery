@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Rainbow.ServiceDiscovery.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -12,18 +13,27 @@ namespace Rainbow.ServiceDiscovery
     {
         private IList<IServiceDiscoveryProvider> _providers;
         private ServiceDiscoveryReloadToken _reloadToken = new ServiceDiscoveryReloadToken();
+        private ServiceDiscoveryOptions _options;
+        private IDisposable _changeTokenRegistration;
 
-        public ServiceDiscovery(IList<IServiceDiscoveryProvider> providers)
+        public ServiceDiscovery(
+            IOptionsChangeTokenSource<ServiceDiscoveryOptions> token
+            , IOptionsMonitor<ServiceDiscoveryOptions> options
+            , IEnumerable<IServiceDiscoveryProvider> providers
+            )
         {
             if (providers == null)
             {
                 throw new ArgumentNullException(nameof(providers));
             }
 
-            _providers = providers;
+            _changeTokenRegistration = options.OnChange(RefreshOptions);
+            RefreshOptions(options.CurrentValue);
+
+            _providers = providers.ToList();
             foreach (var p in providers)
             {
-                p.Load();
+                p.Load(this);
                 ChangeToken.OnChange(() => p.GetReloadToken(), () => RaiseChanged());
             }
 
@@ -31,26 +41,9 @@ namespace Rainbow.ServiceDiscovery
 
         public IEnumerable<IServiceDiscoveryProvider> Providers => _providers;
 
-        public bool TryGet(string serviceName, out ServiceEndpoint value)
+        private void RefreshOptions(ServiceDiscoveryOptions options)
         {
-            value = null;
-            foreach (var provider in _providers.Reverse())
-            {
-                if (provider.TryGet(serviceName, out value))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        public ServiceEndpoint GetService(string serviceName)
-        {
-            ServiceEndpoint result;
-            if (!this.TryGet(serviceName, out result))
-            {
-                throw new Exception("没有找到" + serviceName + "服务");
-            }
-            return result;
+            this._options = options;
         }
 
 
@@ -64,9 +57,20 @@ namespace Rainbow.ServiceDiscovery
         {
             foreach (var provider in _providers)
             {
-                provider.Load();
+                provider.Load(this);
             }
             RaiseChanged();
+        }
+
+
+        public IServiceEndpoint GetLocalEndpoint()
+        {
+            return new ServiceEndpoint(this._options.Name, this._options.Url);
+        }
+
+        public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
+        {
+            return _providers.SelectMany(p => p.GetEndpoints(serviceName));
         }
     }
 }

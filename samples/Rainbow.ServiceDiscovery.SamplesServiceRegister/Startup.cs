@@ -67,6 +67,11 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
             //    services.AddSingleton<IServiceDiscovery>(serviceDiscovery);
             //})
 
+            services.AddDiscovery(Configuration.GetSection("Service:Application"), builder =>
+            {
+                builder.AddZookeeper(Configuration.GetSection("service:Zookeeper"));
+            });
+
             services.AddMvc();
         }
 
