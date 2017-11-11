@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4142F6E9-983B-4E4C-9AFD-041C2C039059}"
 EndProject
@@ -15,11 +15,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Zo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.SamplesServiceRegister", "samples\Rainbow.ServiceDiscovery.SamplesServiceRegister\Rainbow.ServiceDiscovery.SamplesServiceRegister.csproj", "{213C9F84-247E-4625-BDDD-A04A11F434E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.ServiceDiscovery.Abstractions", "src\Rainbow.ServiceDiscovery.Abstractions\Rainbow.ServiceDiscovery.Abstractions.csproj", "{54182037-1020-42A3-864A-1215F4EED17C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Abstractions", "src\Rainbow.ServiceDiscovery.Abstractions\Rainbow.ServiceDiscovery.Abstractions.csproj", "{54182037-1020-42A3-864A-1215F4EED17C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.ServiceDiscovery.Proxy.Abstractions", "src\Rainbow.ServiceDiscovery.Proxy.Abstractions\Rainbow.ServiceDiscovery.Proxy.Abstractions.csproj", "{CB479D1D-44F1-40BE-9B78-6A0EF2041367}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Proxy.Abstractions", "src\Rainbow.ServiceDiscovery.Proxy.Abstractions\Rainbow.ServiceDiscovery.Proxy.Abstractions.csproj", "{CB479D1D-44F1-40BE-9B78-6A0EF2041367}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Proxy.Http", "src\Rainbow.ServiceDiscovery.Proxy.Http\Rainbow.ServiceDiscovery.Proxy.Http.csproj", "{39B5F717-4FA6-446B-A398-4D0C26A48C14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.ServiceDiscovery.Consul", "src\Rainbow.ServiceDiscovery.Consul\Rainbow.ServiceDiscovery.Consul.csproj", "{853EE423-B634-4262-97B3-F8D94BE5EB32}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Eureka", "src\Rainbow.ServiceDiscovery.Eureka\Rainbow.ServiceDiscovery.Eureka.csproj", "{5C3046A5-3AF4-4DD3-A98B-D7A093166615}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,14 @@ Global
 		{39B5F717-4FA6-446B-A398-4D0C26A48C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39B5F717-4FA6-446B-A398-4D0C26A48C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39B5F717-4FA6-446B-A398-4D0C26A48C14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{853EE423-B634-4262-97B3-F8D94BE5EB32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{853EE423-B634-4262-97B3-F8D94BE5EB32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{853EE423-B634-4262-97B3-F8D94BE5EB32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{853EE423-B634-4262-97B3-F8D94BE5EB32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C3046A5-3AF4-4DD3-A98B-D7A093166615}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C3046A5-3AF4-4DD3-A98B-D7A093166615}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C3046A5-3AF4-4DD3-A98B-D7A093166615}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C3046A5-3AF4-4DD3-A98B-D7A093166615}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +74,8 @@ Global
 		{54182037-1020-42A3-864A-1215F4EED17C} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
 		{CB479D1D-44F1-40BE-9B78-6A0EF2041367} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
 		{39B5F717-4FA6-446B-A398-4D0C26A48C14} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
+		{853EE423-B634-4262-97B3-F8D94BE5EB32} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
+		{5C3046A5-3AF4-4DD3-A98B-D7A093166615} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8FBCB90A-4D08-46E2-9CF4-DC54C728A3ED}
