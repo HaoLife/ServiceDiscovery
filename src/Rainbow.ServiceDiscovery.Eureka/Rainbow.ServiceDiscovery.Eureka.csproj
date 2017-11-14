@@ -4,4 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Rainbow.ServiceDiscovery.Abstractions\Rainbow.ServiceDiscovery.Abstractions.csproj" />
+    <ProjectReference Include="..\Rainbow.ServiceDiscovery\Rainbow.ServiceDiscovery.csproj" />
+  </ItemGroup>
+
 </Project>
