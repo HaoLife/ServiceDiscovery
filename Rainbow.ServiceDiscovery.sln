@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4142F6E9-983B-4E4C-9AFD-041C2C039059}"
 EndProject
@@ -21,9 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Proxy.Http", "src\Rainbow.ServiceDiscovery.Proxy.Http\Rainbow.ServiceDiscovery.Proxy.Http.csproj", "{39B5F717-4FA6-446B-A398-4D0C26A48C14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.ServiceDiscovery.Consul", "src\Rainbow.ServiceDiscovery.Consul\Rainbow.ServiceDiscovery.Consul.csproj", "{853EE423-B634-4262-97B3-F8D94BE5EB32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Consul", "src\Rainbow.ServiceDiscovery.Consul\Rainbow.ServiceDiscovery.Consul.csproj", "{853EE423-B634-4262-97B3-F8D94BE5EB32}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.ServiceDiscovery.Eureka", "src\Rainbow.ServiceDiscovery.Eureka\Rainbow.ServiceDiscovery.Eureka.csproj", "{5C3046A5-3AF4-4DD3-A98B-D7A093166615}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.ServiceDiscovery.Test", "Rainbow.ServiceDiscovery.Test\Rainbow.ServiceDiscovery.Test.csproj", "{CAC050CD-417A-4F2E-BAC8-371FB09C2556}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{5C3046A5-3AF4-4DD3-A98B-D7A093166615}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C3046A5-3AF4-4DD3-A98B-D7A093166615}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C3046A5-3AF4-4DD3-A98B-D7A093166615}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAC050CD-417A-4F2E-BAC8-371FB09C2556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAC050CD-417A-4F2E-BAC8-371FB09C2556}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAC050CD-417A-4F2E-BAC8-371FB09C2556}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAC050CD-417A-4F2E-BAC8-371FB09C2556}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +82,7 @@ Global
 		{39B5F717-4FA6-446B-A398-4D0C26A48C14} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
 		{853EE423-B634-4262-97B3-F8D94BE5EB32} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
 		{5C3046A5-3AF4-4DD3-A98B-D7A093166615} = {4142F6E9-983B-4E4C-9AFD-041C2C039059}
+		{CAC050CD-417A-4F2E-BAC8-371FB09C2556} = {5DFC8029-7331-45F7-AEEF-884ECDE0AA09}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8FBCB90A-4D08-46E2-9CF4-DC54C728A3ED}

@@ -23,7 +23,7 @@ namespace Rainbow.ServiceDiscovery
             _logger = logger;
         }
 
-        internal protected override Uri LookupService(Uri current)
+        public override Uri LookupService(Uri current)
         {
             _logger?.LogDebug("LookupService({0})", current.ToString());
             if (!current.IsDefaultPort)
