@@ -13,7 +13,6 @@ namespace Rainbow.ServiceDiscovery.Consul
 
         public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
         {
-            _client = new ConsulClient();
             throw new NotImplementedException();
         }
 
