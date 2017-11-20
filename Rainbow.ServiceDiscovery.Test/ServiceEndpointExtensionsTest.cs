@@ -8,12 +8,10 @@ namespace Rainbow.ServiceDiscovery.Test
         [Fact]
         public void ServiceEndpointAndUriEqual()
         {
-            var serviceEndpoint = new ServiceEndpoint("service", "http://127.0.0.1:8080/api");
+            var sourceUri = new Uri("http://127.0.0.1:8080/api");
+            var serviceEndpoint = new ServiceEndpoint("service", sourceUri);
             var uri = ServiceEndpointExtensions.ToUri(serviceEndpoint);
-            Assert.Equal(uri.Scheme, serviceEndpoint.Protocol);
-            Assert.Equal(uri.Host, serviceEndpoint.HostName);
-            Assert.Equal(uri.Port, serviceEndpoint.Port);
-            Assert.Equal(uri.AbsolutePath, serviceEndpoint.Path);
+            Assert.Equal(uri, sourceUri);
         }
     }
 }

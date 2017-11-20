@@ -18,6 +18,8 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
         private ZooKeeper _zkClient;
         private SortedDictionary<string, List<IServiceEndpoint>> _cache = new SortedDictionary<string, List<IServiceEndpoint>>();
         private ILogger _logger;
+        private ZookeeperServiceDiscoveryOptions _options;
+        private IServiceDiscovery _serviceDiscovery;
 
         public ZookeeperServiceDiscoveryProvider(
             ZookeeperServiceDiscoverySource source,
@@ -28,8 +30,20 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
                 throw new ArgumentNullException(nameof(source));
             }
             this._source = source;
-            this._zkClient = new ZooKeeper(source.Options.Connection, (int)source.Options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
+            this._options = new ZookeeperServiceDiscoveryOptions(source.Configuration);
+            this._zkClient = new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
             this._logger = loggerFactory.CreateLogger<ZookeeperServiceDiscoveryProvider>();
+
+            ChangeToken.OnChange(source.Configuration.GetReloadToken, RaiseChanged);
+        }
+
+        private void RaiseChanged()
+        {
+            this._options = new ZookeeperServiceDiscoveryOptions(_source.Configuration);
+            this._zkClient.closeAsync().GetAwaiter().GetResult();
+            this._zkClient= new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
+            Load();
+
         }
 
         public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
@@ -50,12 +64,17 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
         public void Load(IServiceDiscovery serviceDiscovery)
         {
-            if (this._source.Options.IsRegister)
+            _serviceDiscovery = serviceDiscovery;
+            Load();
+        }
+
+        private void Load()
+        {
+            if (this._options.IsRegister)
             {
-                Create(serviceDiscovery);
+                Create(_serviceDiscovery);
             }
             LoadServices();
-
         }
 
         private void Create(IServiceDiscovery serviceDiscovery)

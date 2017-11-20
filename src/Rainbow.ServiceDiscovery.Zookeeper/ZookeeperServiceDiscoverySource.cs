@@ -4,16 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace Rainbow.ServiceDiscovery.Zookeeper
 {
     public class ZookeeperServiceDiscoverySource : IServiceDiscoverySource
     {
-        public ZookeeperServiceDiscoveryOptions Options { get; }
+        //public ZookeeperServiceDiscoveryOptions Options { get; }
+        public IConfiguration Configuration { get; set; }
 
-        public ZookeeperServiceDiscoverySource(ZookeeperServiceDiscoveryOptions options)
+
+        public ZookeeperServiceDiscoverySource(IConfiguration configuration)
         {
-            this.Options = options;
+            this.Configuration = configuration;
         }
 
         public IServiceDiscoveryProvider Build(IServiceProvider privider)

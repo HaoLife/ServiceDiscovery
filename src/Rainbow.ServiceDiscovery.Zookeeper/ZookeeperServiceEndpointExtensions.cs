@@ -14,16 +14,5 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
         }
 
 
-        public static string[] ToPathNodes(this ServiceEndpoint endpoint)
-        {
-            var nodes = endpoint.Name.GetServiceDirectory().Split('/').Skip(1).ToArray();
-            var paths = new string[nodes.Length];
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                paths[i] = "/" + string.Join("/", nodes.Take(i + 1));
-            }
-
-            return paths;
-        }
     }
 }
