@@ -13,7 +13,7 @@ namespace Rainbow.ServiceDiscovery
         public static IServiceDiscoveryBuilder AddZookeeper(this IServiceDiscoveryBuilder builder, IConfiguration configuration)
         {
             
-            var source = new ZookeeperServiceDiscoverySource(new ZookeeperServiceDiscoveryOptions(configuration));
+            var source = new ZookeeperServiceDiscoverySource(configuration);
             builder.ServiceCollection.AddSingleton<IServiceDiscoveryProvider>(source.Build);
             return builder;
         }

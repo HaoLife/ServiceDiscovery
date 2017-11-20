@@ -30,7 +30,7 @@ namespace Rainbow.ServiceDiscovery
 
         }
 
-        abstract internal protected Uri LookupService(Uri current);
+        public abstract Uri LookupService(Uri current);
 
     }
 }
