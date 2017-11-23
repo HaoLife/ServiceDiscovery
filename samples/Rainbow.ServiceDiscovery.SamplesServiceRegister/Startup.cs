@@ -40,7 +40,9 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
 
             services.AddDiscovery(Configuration.GetSection("Service:Application"), builder =>
             {
-                builder.AddZookeeper(Configuration.GetSection("service:Zookeeper"));
+                //builder.AddZookeeper(Configuration.GetSection("service:Zookeeper"));
+                builder.AddConsul(Configuration.GetSection("service:consul"));
+
             });
 
             services.AddMvc();

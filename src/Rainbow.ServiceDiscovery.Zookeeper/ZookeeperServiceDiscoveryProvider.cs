@@ -41,9 +41,8 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
         {
             this._options = new ZookeeperServiceDiscoveryOptions(_source.Configuration);
             this._zkClient.closeAsync().GetAwaiter().GetResult();
-            this._zkClient= new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
+            this._zkClient = new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
             Load();
-
         }
 
         public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
@@ -137,9 +136,9 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
                 endpoints = new List<IServiceEndpoint>();
                 _cache.Add(service, endpoints);
             }
-            endpoints.Clear();
             var serviceDir = service.GetServiceDirectory();
             var pathChildren = this._zkClient.getChildrenAsync(serviceDir, true).GetAwaiter().GetResult();
+            endpoints.Clear();
             foreach (var address in pathChildren.Children)
             {
                 endpoints.Add(new ServiceEndpoint(service, Uri.UnescapeDataString(address)));
@@ -154,7 +153,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
         private void Connection(WatchedEvent @event)
         {
-            switch(@event.get_Type())
+            switch (@event.get_Type())
             {
                 case Watcher.Event.EventType.NodeChildrenChanged:
                     ChildrenChange(@event);

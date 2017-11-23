@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Rainbow.ServiceDiscovery.Consul\Rainbow.ServiceDiscovery.Consul.csproj" />
     <ProjectReference Include="..\..\src\Rainbow.ServiceDiscovery.Zookeeper\Rainbow.ServiceDiscovery.Zookeeper.csproj" />
     <ProjectReference Include="..\..\src\Rainbow.ServiceDiscovery\Rainbow.ServiceDiscovery.csproj" />
   </ItemGroup>
