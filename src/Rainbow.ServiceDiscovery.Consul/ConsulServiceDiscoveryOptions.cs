@@ -20,5 +20,7 @@ namespace Rainbow.ServiceDiscovery.Consul
         public Uri Address { get; set; }
         public bool IsRegister { get; set; }
         public string CheckPath { get; set; }
+        public TimeSpan CheckTimeout { get; set; } = new TimeSpan(0, 0, 1);
+        public TimeSpan CheckInterval { get; set; } = new TimeSpan(0, 0, 10);
     }
 }

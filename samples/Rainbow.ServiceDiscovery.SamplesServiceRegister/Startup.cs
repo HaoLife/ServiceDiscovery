@@ -12,6 +12,7 @@ using Rainbow.ServiceDiscovery.Zookeeper;
 using Rainbow.ServiceDiscovery.Abstractions;
 using Consul;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
 {
@@ -27,17 +28,6 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //var config = new ConsulClientConfiguration()
-            //{
-            //    Address = new Uri("http://127.0.0.1:8500")
-            //};
-
-            //using (var client = new ConsulClient(config))
-            //{
-            //    var result = client.KV.Keys("service/").GetAwaiter().GetResult();
-            //}
-
-
             services.AddDiscovery(Configuration.GetSection("Service:Application"), builder =>
             {
                 //builder.AddZookeeper(Configuration.GetSection("service:Zookeeper"));
@@ -57,6 +47,13 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
             }
 
             app.UseMvc();
+            app.Map("/health", p =>
+            {
+                p.Run(async context =>
+                {
+                    await context.Response.WriteAsync("ok");
+                });
+            });
         }
     }
 }

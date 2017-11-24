@@ -12,10 +12,9 @@ namespace Rainbow.ServiceDiscovery.Consul
 {
     public class ConsulServiceDiscoveryProvider : IServiceDiscoveryProvider
     {
-        private readonly IConsulClient _client;
+        private IConsulClient _client;
         private ConsulServiceDiscoveryOptions _options;
         private ServiceDiscoveryReloadToken _reloadToken = new ServiceDiscoveryReloadToken();
-        private CancellationTokenSource _cts = new CancellationTokenSource();
         private IServiceDiscovery _serviceDiscovery;
         private SortedDictionary<string, List<IServiceEndpoint>> _cache = new SortedDictionary<string, List<IServiceEndpoint>>();
         private ILogger _logger;
@@ -28,14 +27,20 @@ namespace Rainbow.ServiceDiscovery.Consul
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            //this._source = source;
             this._options = new ConsulServiceDiscoveryOptions(source.Configuration);
-            //this._zkClient = new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
             this._logger = loggerFactory.CreateLogger<ConsulServiceDiscoveryProvider>();
 
-            //ChangeToken.OnChange(source.Configuration.GetReloadToken, RaiseChanged);
+            ChangeToken.OnChange(source.Configuration.GetReloadToken, RaiseChanged);
 
             _client = new ConsulClient(SetConsulConfig);
+
+        }
+
+        private void RaiseChanged()
+        {
+            _client.Dispose();
+            _client = new ConsulClient(SetConsulConfig);
+            Load();
         }
 
         private void SetConsulConfig(ConsulClientConfiguration config)
@@ -61,7 +66,6 @@ namespace Rainbow.ServiceDiscovery.Consul
 
         public void Load(IServiceDiscovery serviceDiscovery)
         {
-
             _serviceDiscovery = serviceDiscovery;
             Load();
         }
@@ -81,31 +85,75 @@ namespace Rainbow.ServiceDiscovery.Consul
             var checkUri = endpoint.ToUri();
             var builder = new UriBuilder(checkUri);
             builder.Path = string.IsNullOrEmpty(endpoint.Path) || endpoint.Path == "/" ? _options.CheckPath : $"{builder.Path}/{_options.CheckPath}";
+
             var register = new AgentServiceRegistration()
             {
                 Address = endpoint.HostName,
                 Port = endpoint.Port,
                 Name = endpoint.Name,
                 ID = $"{endpoint.Name}-{endpoint.Protocol}-{endpoint.HostName}-{endpoint.Port}-{endpoint.Path}",
-                Checks = new AgentServiceCheck[] {
-                    new AgentServiceCheck{
-                        HTTP=builder.Uri.ToString(),
-                        Interval=new TimeSpan(0,0,10),
-                        Timeout=new TimeSpan(0,0,1),
-                    }
+                Tags = new string[] {
+                    $"{ConsulDefaults.Path}-{endpoint.Path}",
+                    $"{ConsulDefaults.Protocol}-{endpoint.Protocol}"
+                },
+                Check = new AgentServiceCheck
+                {
+                    HTTP = builder.Uri.ToString(),
+                    Interval = _options.CheckInterval,
+                    Timeout = _options.CheckTimeout,
                 }
             };
-            var result = this._client.Agent.ServiceRegister(register, _cts.Token).GetAwaiter().GetResult();
+            var result = this._client.Agent.ServiceRegister(register).GetAwaiter().GetResult();
+
+            _logger.LogDebug($"执行注册服务:{Newtonsoft.Json.JsonConvert.SerializeObject(_options)}");
+
         }
 
         private void LoadServices()
         {
-            var result = this._client.Agent.Services().GetAwaiter().GetResult();
-            foreach (var item in result.Response.Values)
+            var catalog = this._client.Catalog.Services().GetAwaiter().GetResult();
+            foreach (var item in catalog.Response.Where(a => a.Key != "consul"))
             {
-                this._logger.LogInformation($"{item.Address}");
+                LoadService(item.Key);
+            }
+
+        }
+
+        private void LoadService(string service)
+        {
+            List<IServiceEndpoint> endpoints = new List<IServiceEndpoint>();
+            var serviceEntry = this._client.Health.Service(service, null, true).GetAwaiter().GetResult();
+
+            foreach (var item in serviceEntry.Response)
+            {
+                if (!item.Checks.All(a => a.Status.Status == ConsulDefaults.HealthStatusPassing)) continue;
+
+                var protocol = ConsulDefaults.ProtocolValue;
+                var path = ConsulDefaults.PathValue;
+                if (item.Service.Tags.Where(a => a.StartsWith($"{ConsulDefaults.Path}-")).Any())
+                {
+                    protocol = item.Service.Tags.Where(a => a.StartsWith($"{ConsulDefaults.Path}-")).FirstOrDefault().Substring(ConsulDefaults.Path.Length + 1);
+                }
+                if (item.Service.Tags.Where(a => a.StartsWith($"{ConsulDefaults.PathValue}-")).Any())
+                {
+                    path = item.Service.Tags.Where(a => a.StartsWith($"{ConsulDefaults.PathValue}-")).FirstOrDefault().Substring(ConsulDefaults.Path.Length + 1);
+                }
+
+                endpoints.Add(new ServiceEndpoint(item.Service.Service, protocol, item.Service.Address, item.Service.Port, path));
+            }
+
+            if (_cache.ContainsKey(service))
+            {
+                _cache[service] = endpoints;
+            }
+            else
+            {
+                _cache.Add(service, endpoints);
             }
         }
+
+
+
 
 
 
