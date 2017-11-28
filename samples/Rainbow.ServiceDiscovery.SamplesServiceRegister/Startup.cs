@@ -30,8 +30,8 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
         {
             services.AddDiscovery(Configuration.GetSection("Service:Application"), builder =>
             {
-                //builder.AddZookeeper(Configuration.GetSection("service:Zookeeper"));
-                builder.AddConsul(Configuration.GetSection("service:consul"));
+                builder.AddZookeeper(Configuration.GetSection("service:Zookeeper"));
+                //builder.AddConsul(Configuration.GetSection("service:consul"));
 
             });
 
@@ -48,6 +48,13 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
 
             app.UseMvc();
             app.Map("/health", p =>
+            {
+                p.Run(async context =>
+                {
+                    await context.Response.WriteAsync("ok");
+                });
+            });
+            app.Map("/test", p =>
             {
                 p.Run(async context =>
                 {

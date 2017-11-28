@@ -17,6 +17,7 @@ namespace Rainbow.ServiceDiscovery.Consul
         private ServiceDiscoveryReloadToken _reloadToken = new ServiceDiscoveryReloadToken();
         private IServiceDiscovery _serviceDiscovery;
         private SortedDictionary<string, List<IServiceEndpoint>> _cache = new SortedDictionary<string, List<IServiceEndpoint>>();
+        private SortedDictionary<string, ulong> _cacheIndex = new SortedDictionary<string, ulong>();
         private ILogger _logger;
 
         public ConsulServiceDiscoveryProvider(
@@ -46,6 +47,7 @@ namespace Rainbow.ServiceDiscovery.Consul
         private void SetConsulConfig(ConsulClientConfiguration config)
         {
             config.Address = _options.Address;
+            config.WaitTime = new TimeSpan(0, 1, 0);
         }
 
         public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
@@ -101,7 +103,7 @@ namespace Rainbow.ServiceDiscovery.Consul
                     HTTP = builder.Uri.ToString(),
                     Interval = _options.CheckInterval,
                     Timeout = _options.CheckTimeout,
-                }
+                },
             };
             var result = this._client.Agent.ServiceRegister(register).GetAwaiter().GetResult();
 
@@ -116,17 +118,19 @@ namespace Rainbow.ServiceDiscovery.Consul
             {
                 LoadService(item.Key);
             }
+            //this._client.Catalog.Nodes().GetAwaiter().GetResult().Response.First().Name
 
+            
         }
 
-        private void LoadService(string service)
+        private void LoadService(string service, ulong lastIndex = 0)
         {
             List<IServiceEndpoint> endpoints = new List<IServiceEndpoint>();
-            var serviceEntry = this._client.Health.Service(service, null, true).GetAwaiter().GetResult();
+            var serviceEntry = this._client.Health.Service(service, null, true, new QueryOptions() { WaitTime = new TimeSpan(0, 0, 10), WaitIndex = lastIndex, }).GetAwaiter().GetResult();
 
             foreach (var item in serviceEntry.Response)
             {
-                if (!item.Checks.All(a => a.Status.Status == ConsulDefaults.HealthStatusPassing)) continue;
+                //if (!item.Checks.All(a => a.Status.Status == ConsulDefaults.HealthStatusPassing)) continue;
 
                 var protocol = ConsulDefaults.ProtocolValue;
                 var path = ConsulDefaults.PathValue;
@@ -145,16 +149,14 @@ namespace Rainbow.ServiceDiscovery.Consul
             if (_cache.ContainsKey(service))
             {
                 _cache[service] = endpoints;
+                _cacheIndex[service] = serviceEntry.LastIndex;
             }
             else
             {
                 _cache.Add(service, endpoints);
+                _cacheIndex.Add(service, serviceEntry.LastIndex);
             }
         }
-
-
-
-
 
 
     }
