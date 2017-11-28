@@ -10,7 +10,6 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 {
     public class ZookeeperServiceDiscoverySource : IServiceDiscoverySource
     {
-        //public ZookeeperServiceDiscoveryOptions Options { get; }
         public IConfiguration Configuration { get; set; }
 
 

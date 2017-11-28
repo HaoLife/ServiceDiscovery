@@ -14,12 +14,18 @@ namespace Rainbow.ServiceDiscovery
         }
 
         public ServiceEndpoint(string name, Uri uri)
+            : this(name, uri.Scheme, uri.Host, uri.Port, uri.AbsolutePath)
         {
+
+        }
+        public ServiceEndpoint(string name, string protocol, string hostname, int port, string path)
+        {
+
             this.Name = name;
-            this.Protocol = uri.Scheme;
-            this.HostName = uri.Host;
-            this.Port = uri.Port;
-            this.Path = uri.AbsolutePath;
+            this.Protocol = protocol;
+            this.HostName = hostname;
+            this.Port = port;
+            this.Path = path;
         }
 
         public string Name { get; set; }
@@ -31,5 +37,6 @@ namespace Rainbow.ServiceDiscovery
         public int Port { get; set; }
 
         public string Path { get; set; }
+
     }
 }
