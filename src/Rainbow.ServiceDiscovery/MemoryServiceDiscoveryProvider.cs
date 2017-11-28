@@ -14,7 +14,7 @@ namespace Rainbow.ServiceDiscovery
         private MemoryServiceDiscoverySource _source;
         private MemoryServiceDiscoveryOptions _options;
         private ILogger _logger;
-        private SortedDictionary<string, List<IServiceEndpoint>> _cache = new SortedDictionary<string, List<IServiceEndpoint>>();
+        private SortedDictionary<string, IEnumerable<IServiceEndpoint>> _cache = new SortedDictionary<string, IEnumerable<IServiceEndpoint>>();
 
         public MemoryServiceDiscoveryProvider(
             MemoryServiceDiscoverySource source,
@@ -39,23 +39,13 @@ namespace Rainbow.ServiceDiscovery
 
         protected virtual void Initialize()
         {
-            SortedDictionary<string, List<IServiceEndpoint>> cache = new SortedDictionary<string, List<IServiceEndpoint>>();
+            SortedDictionary<string, IEnumerable<IServiceEndpoint>> cache = new SortedDictionary<string, IEnumerable<IServiceEndpoint>>();
             foreach (var item in _options.Services)
             {
                 var serviceEndpoint = new ServiceEndpoint(item.Key, item.Value);
                 cache.Add(serviceEndpoint.Name, new List<IServiceEndpoint>() { serviceEndpoint });
             }
             _cache = cache;
-        }
-
-        public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
-        {
-            List<IServiceEndpoint> result;
-            if (!_cache.TryGetValue(serviceName, out result))
-            {
-                return Enumerable.Empty<IServiceEndpoint>();
-            }
-            return result;
         }
 
         public IChangeToken GetReloadToken()
@@ -66,6 +56,11 @@ namespace Rainbow.ServiceDiscovery
         public void Load(IServiceDiscovery serviceDiscovery)
         {
             Initialize();
+        }
+
+        public bool TryGetEndpoints(string serviceName, out IEnumerable<IServiceEndpoint> endpoints)
+        {
+            return _cache.TryGetValue(serviceName, out endpoints);
         }
     }
 }

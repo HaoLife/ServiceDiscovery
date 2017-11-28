@@ -16,7 +16,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
         private ServiceDiscoveryReloadToken _reloadToken = new ServiceDiscoveryReloadToken();
         private ZookeeperServiceDiscoverySource _source;
         private ZooKeeper _zkClient;
-        private SortedDictionary<string, List<IServiceEndpoint>> _cache = new SortedDictionary<string, List<IServiceEndpoint>>();
+        private SortedDictionary<string, IEnumerable<IServiceEndpoint>> _cache = new SortedDictionary<string, IEnumerable<IServiceEndpoint>>();
         private ILogger _logger;
         private ZookeeperServiceDiscoveryOptions _options;
         private IServiceDiscovery _serviceDiscovery;
@@ -45,15 +45,11 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             Initialize();
         }
 
-        public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
+        public bool TryGetEndpoints(string serviceName, out IEnumerable<IServiceEndpoint> endpoints)
         {
-            List<IServiceEndpoint> result;
-            if (!_cache.TryGetValue(serviceName, out result))
-            {
-                return Enumerable.Empty<IServiceEndpoint>();
-            }
-            return result;
+            return _cache.TryGetValue(serviceName, out endpoints);
         }
+        
 
         public IChangeToken GetReloadToken()
         {
@@ -90,7 +86,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             var path = $"/{ZookeeperDefaults.NameService}";
             try
             {
-                SortedDictionary<string, List<IServiceEndpoint>> cache = new SortedDictionary<string, List<IServiceEndpoint>>();
+                SortedDictionary<string, IEnumerable<IServiceEndpoint>> cache = new SortedDictionary<string, IEnumerable<IServiceEndpoint>>();
 
                 var node = this._zkClient.getChildrenAsync(path, false).GetAwaiter().GetResult();
 
@@ -198,7 +194,6 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
                     break;
             }
         }
-
 
         private class SubscribeWatcher : Watcher
         {
