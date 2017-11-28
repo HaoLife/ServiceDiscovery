@@ -70,7 +70,13 @@ namespace Rainbow.ServiceDiscovery
 
         public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
         {
-            return _providers.SelectMany(p => p.GetEndpoints(serviceName));
+            foreach (var item in this._providers.Reverse())
+            {
+                var endpoints = item.GetEndpoints(serviceName);
+                if (endpoints.Any()) return endpoints;
+            }
+
+            return Enumerable.Empty<IServiceEndpoint>();
         }
     }
 }

@@ -1,0 +1,23 @@
+﻿{
+  "Service": {
+    "Application": {
+      "name": "service",
+      "url": "http://localhost:63052"
+    },
+    "Zookeeper": {
+      "Connection": "127.0.0.1:2181",
+      "SessionTimeout": "00:00:30",
+      "IsRegister": true
+    },
+    "consul": {
+      "Address": "http://172.21.252.249:8500",
+      "IsRegister": false,
+      "CheckPath": "health"
+    },
+    "memory": {
+      "services": {
+        "test": "http://localhost:63052"
+      }
+    }
+  }
+}

@@ -18,7 +18,7 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
         }
@@ -30,7 +30,9 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
         {
             services.AddDiscovery(Configuration.GetSection("Service:Application"), builder =>
             {
-                builder.AddZookeeper(Configuration.GetSection("service:Zookeeper"));
+                builder
+                    .AddZookeeper(Configuration.GetSection("service:Zookeeper"))
+                    .AddMemory(Configuration.GetSection("service:memory"));
                 //builder.AddConsul(Configuration.GetSection("service:consul"));
 
             });
@@ -47,20 +49,6 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
             }
 
             app.UseMvc();
-            app.Map("/health", p =>
-            {
-                p.Run(async context =>
-                {
-                    await context.Response.WriteAsync("ok");
-                });
-            });
-            app.Map("/test", p =>
-            {
-                p.Run(async context =>
-                {
-                    await context.Response.WriteAsync("ok");
-                });
-            });
         }
     }
 }

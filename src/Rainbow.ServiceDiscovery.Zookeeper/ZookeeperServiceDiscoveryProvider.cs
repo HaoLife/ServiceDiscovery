@@ -14,7 +14,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
     public class ZookeeperServiceDiscoveryProvider : IServiceDiscoveryProvider
     {
         private ServiceDiscoveryReloadToken _reloadToken = new ServiceDiscoveryReloadToken();
-        private readonly ZookeeperServiceDiscoverySource _source;
+        private ZookeeperServiceDiscoverySource _source;
         private ZooKeeper _zkClient;
         private SortedDictionary<string, List<IServiceEndpoint>> _cache = new SortedDictionary<string, List<IServiceEndpoint>>();
         private ILogger _logger;
@@ -42,7 +42,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             this._options = new ZookeeperServiceDiscoveryOptions(_source.Configuration);
             this._zkClient.closeAsync().GetAwaiter().GetResult();
             this._zkClient = new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
-            Load();
+            Initialize();
         }
 
         public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
@@ -63,20 +63,53 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
         public void Load(IServiceDiscovery serviceDiscovery)
         {
+            InitializeParam(serviceDiscovery);
+            Initialize();
+        }
+        private void InitializeParam(IServiceDiscovery serviceDiscovery)
+        {
             _serviceDiscovery = serviceDiscovery;
-            Load();
         }
 
-        private void Load()
+        protected virtual void Initialize()
+        {
+            HandleRegister();
+            HandleDiscovery();
+        }
+
+        protected virtual void HandleRegister()
         {
             if (this._options.IsRegister)
             {
                 Create(_serviceDiscovery);
             }
-            LoadServices();
         }
 
-        private void Create(IServiceDiscovery serviceDiscovery)
+        protected virtual void HandleDiscovery()
+        {
+            var path = $"/{ZookeeperDefaults.NameService}";
+            try
+            {
+                SortedDictionary<string, List<IServiceEndpoint>> cache = new SortedDictionary<string, List<IServiceEndpoint>>();
+
+                var node = this._zkClient.getChildrenAsync(path, false).GetAwaiter().GetResult();
+
+                foreach (var item in node.Children)
+                {
+                    var endpoints = GetZookeeperServiceEndpoints(item);
+                    cache.Add(item, endpoints);
+                }
+
+                _cache = cache;
+            }
+            catch (KeeperException.NodeExistsException existsex)
+            {
+                this._zkClient.createAsync(path, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT).GetAwaiter().GetResult();
+                HandleDiscovery();
+            }
+        }
+
+        protected virtual void Create(IServiceDiscovery serviceDiscovery)
         {
             var endpoint = serviceDiscovery.GetLocalEndpoint();
             var path = endpoint.ToPath();
@@ -107,42 +140,19 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             this._zkClient.createAsync(node, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT).GetAwaiter().GetResult();
         }
 
-        private void LoadServices()
+
+
+        protected virtual List<IServiceEndpoint> GetZookeeperServiceEndpoints(string service)
         {
+            List<IServiceEndpoint> endpoints = new List<IServiceEndpoint>();
 
-            var path = $"/{ZookeeperDefaults.NameService}";
-            try
-            {
-                var children = this._zkClient.getChildrenAsync(path, false).GetAwaiter().GetResult();
-                _cache.Clear();
-                foreach (var item in children.Children)
-                {
-                    LoadService(item);
-                }
-
-            }
-            catch (KeeperException.NodeExistsException existsex)
-            {
-                this._zkClient.createAsync(path, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT).GetAwaiter().GetResult();
-                LoadServices();
-            }
-        }
-
-        private void LoadService(string service)
-        {
-            List<IServiceEndpoint> endpoints;
-            if (!_cache.TryGetValue(service, out endpoints))
-            {
-                endpoints = new List<IServiceEndpoint>();
-                _cache.Add(service, endpoints);
-            }
             var serviceDir = service.GetServiceDirectory();
             var pathChildren = this._zkClient.getChildrenAsync(serviceDir, true).GetAwaiter().GetResult();
-            endpoints.Clear();
             foreach (var address in pathChildren.Children)
             {
                 endpoints.Add(new ServiceEndpoint(service, Uri.UnescapeDataString(address)));
             }
+            return endpoints;
         }
 
 
@@ -165,11 +175,15 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             var serviceName = @event.getPath().GetServiceNameByPath();
             if (string.IsNullOrEmpty(serviceName)) return;
 
-            LoadService(serviceName);
-
+            if (!_cache.ContainsKey(serviceName))
+            {
+                _cache.Add(serviceName, new List<IServiceEndpoint>());
+            }
+            var endpoints = GetZookeeperServiceEndpoints(serviceName);
+            _cache[serviceName] = endpoints;
         }
 
-        private void NodeChange(WatchedEvent @event)
+        protected virtual void NodeChange(WatchedEvent @event)
         {
             switch (@event.getState())
             {
@@ -177,7 +191,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
                     NodeDisconnected(@event);
                     break;
                 case Watcher.Event.KeeperState.Expired:
-                    LoadServices();
+                    HandleDiscovery();
                     break;
                 case Watcher.Event.KeeperState.SyncConnected:
                     Connection(@event);
