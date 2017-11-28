@@ -16,7 +16,7 @@ namespace Rainbow.ServiceDiscovery.Consul
         private ConsulServiceDiscoveryOptions _options;
         private ServiceDiscoveryReloadToken _reloadToken = new ServiceDiscoveryReloadToken();
         private IServiceDiscovery _serviceDiscovery;
-        private SortedDictionary<string, List<IServiceEndpoint>> _cache = new SortedDictionary<string, List<IServiceEndpoint>>();
+        private SortedDictionary<string, IEnumerable<IServiceEndpoint>> _cache = new SortedDictionary<string, IEnumerable<IServiceEndpoint>>();
         private SortedDictionary<string, ulong> _cacheIndex = new SortedDictionary<string, ulong>();
         private ILogger _logger;
 
@@ -50,16 +50,10 @@ namespace Rainbow.ServiceDiscovery.Consul
             config.WaitTime = new TimeSpan(0, 1, 0);
         }
 
-        public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
+        public bool TryGetEndpoints(string serviceName, out IEnumerable<IServiceEndpoint> endpoints)
         {
-            List<IServiceEndpoint> result;
-            if (!_cache.TryGetValue(serviceName, out result))
-            {
-                return Enumerable.Empty<IServiceEndpoint>();
-            }
-            return result;
+            return _cache.TryGetValue(serviceName, out endpoints);
         }
-
 
         public IChangeToken GetReloadToken()
         {
@@ -157,7 +151,6 @@ namespace Rainbow.ServiceDiscovery.Consul
                 _cacheIndex.Add(service, serviceEntry.LastIndex);
             }
         }
-
 
     }
 }

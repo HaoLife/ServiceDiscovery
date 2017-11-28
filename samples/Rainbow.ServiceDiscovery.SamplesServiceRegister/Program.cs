@@ -22,6 +22,10 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(config =>
+                {
+                    config.AddJsonFile("services.json", false, true);
+                })
                 .UseStartup<Startup>()
                 .Build();
     }

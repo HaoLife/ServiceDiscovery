@@ -7,7 +7,7 @@ namespace Rainbow.ServiceDiscovery.Abstractions
 {
     public interface IServiceDiscoveryProvider
     {
-        IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName);
+        bool TryGetEndpoints(string serviceName, out IEnumerable<IServiceEndpoint> endpoints);
         void Load(IServiceDiscovery serviceDiscovery);
         IChangeToken GetReloadToken();
 
