@@ -18,6 +18,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
         private ZooKeeper _zkClient;
         private SortedDictionary<string, IEnumerable<IServiceEndpoint>> _cache = new SortedDictionary<string, IEnumerable<IServiceEndpoint>>();
         private ILogger _logger;
+        private ILoggerFactory _loggerFactory;
         private ZookeeperServiceDiscoveryOptions _options;
         private IServiceDiscovery _serviceDiscovery;
 
@@ -29,11 +30,15 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             {
                 throw new ArgumentNullException(nameof(source));
             }
+            if (loggerFactory == null)
+            {
+                throw new ArgumentNullException(nameof(loggerFactory));
+            }
             this._source = source;
             this._options = new ZookeeperServiceDiscoveryOptions(source.Configuration);
-            this._zkClient = new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
+            this._zkClient = new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new ZookeeperSubscribeWatcher(this, loggerFactory));
             this._logger = loggerFactory.CreateLogger<ZookeeperServiceDiscoveryProvider>();
-
+            this._loggerFactory = loggerFactory;
             ChangeToken.OnChange(source.Configuration.GetReloadToken, RaiseChanged);
         }
 
@@ -41,7 +46,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
         {
             this._options = new ZookeeperServiceDiscoveryOptions(_source.Configuration);
             this._zkClient.closeAsync().GetAwaiter().GetResult();
-            this._zkClient = new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new SubscribeWatcher(this));
+            this._zkClient = new ZooKeeper(_options.Connection, (int)_options.SessionTimeout.TotalMilliseconds, new ZookeeperSubscribeWatcher(this, this._loggerFactory));
             Initialize();
         }
 
@@ -49,7 +54,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
         {
             return _cache.TryGetValue(serviceName, out endpoints);
         }
-        
+
 
         public IChangeToken GetReloadToken()
         {
@@ -62,12 +67,13 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             InitializeParam(serviceDiscovery);
             Initialize();
         }
+
         private void InitializeParam(IServiceDiscovery serviceDiscovery)
         {
             _serviceDiscovery = serviceDiscovery;
         }
 
-        protected virtual void Initialize()
+        public virtual void Initialize()
         {
             HandleRegister();
             HandleDiscovery();
@@ -81,7 +87,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             }
         }
 
-        protected virtual void HandleDiscovery()
+        public virtual void HandleDiscovery()
         {
             var path = $"/{ZookeeperDefaults.NameService}";
             try
@@ -98,8 +104,10 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
                 _cache = cache;
             }
-            catch (KeeperException.NodeExistsException existsex)
+            catch (KeeperException.NoNodeException noex)
             {
+                _logger.LogInformation(noex, $"{path} - 节点不存在，无法获取子节点，执行创建节点");
+
                 this._zkClient.createAsync(path, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT).GetAwaiter().GetResult();
                 HandleDiscovery();
             }
@@ -115,12 +123,16 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             }
             catch (KeeperException.NoNodeException noex)
             {
+                _logger.LogInformation(noex, $"{path} - 不能创建节点，目录不存在,执行创建目录");
+
                 CreateNode($"/{ZookeeperDefaults.NameService}");
-                CreateNode(endpoint.Name.GetServiceDirectory());
+                CreateNode(endpoint.ToDirectory());
                 Create(serviceDiscovery);
             }
             catch (KeeperException.NodeExistsException existsex)
             {
+                _logger.LogInformation(existsex, $"{path} - 节点已存在,执行删除节点并重新创建");
+
                 _zkClient.deleteAsync(path, -1).GetAwaiter().GetResult();
                 Create(serviceDiscovery);
             }
@@ -133,7 +145,10 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
 
         private void CreateNode(string node)
         {
-            this._zkClient.createAsync(node, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT).GetAwaiter().GetResult();
+            if (this._zkClient.existsAsync(node).GetAwaiter().GetResult() == null)
+            {
+                this._zkClient.createAsync(node, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT).GetAwaiter().GetResult();
+            }
         }
 
 
@@ -151,67 +166,17 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
             return endpoints;
         }
 
-
-        private void NodeDisconnected(WatchedEvent @event)
+        public virtual void LoadService(string service)
         {
-            _logger.LogInformation($"zookeeper path:{@event.getPath()} state:{@event.getState()} type:{@event.get_Type()}");
+            if (!_cache.ContainsKey(service))
+            {
+                _cache.Add(service, new List<IServiceEndpoint>());
+            }
+            var endpoints = GetZookeeperServiceEndpoints(service);
+            _cache[service] = endpoints;
         }
 
-        private void Connection(WatchedEvent @event)
-        {
-            switch (@event.get_Type())
-            {
-                case Watcher.Event.EventType.NodeChildrenChanged:
-                    ChildrenChange(@event);
-                    break;
-            }
-        }
-        private void ChildrenChange(WatchedEvent @event)
-        {
-            var serviceName = @event.getPath().GetServiceNameByPath();
-            if (string.IsNullOrEmpty(serviceName)) return;
 
-            if (!_cache.ContainsKey(serviceName))
-            {
-                _cache.Add(serviceName, new List<IServiceEndpoint>());
-            }
-            var endpoints = GetZookeeperServiceEndpoints(serviceName);
-            _cache[serviceName] = endpoints;
-        }
-
-        protected virtual void NodeChange(WatchedEvent @event)
-        {
-            switch (@event.getState())
-            {
-                case Watcher.Event.KeeperState.Disconnected:
-                    NodeDisconnected(@event);
-                    break;
-                case Watcher.Event.KeeperState.Expired:
-                    HandleDiscovery();
-                    break;
-                case Watcher.Event.KeeperState.SyncConnected:
-                    Connection(@event);
-                    break;
-            }
-        }
-
-        private class SubscribeWatcher : Watcher
-        {
-            private readonly ZookeeperServiceDiscoveryProvider _provider;
-
-            public SubscribeWatcher(ZookeeperServiceDiscoveryProvider provider)
-            {
-                this._provider = provider;
-            }
-
-            public override Task process(WatchedEvent @event)
-            {
-                return Task.Run(() =>
-                {
-                    this._provider.NodeChange(@event);
-                });
-            }
-        }
 
     }
 

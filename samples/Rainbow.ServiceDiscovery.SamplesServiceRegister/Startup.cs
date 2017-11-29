@@ -18,25 +18,18 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IHostingEnvironment env, IServiceDiscovery serviceDiscovery)
         {
             Configuration = configuration;
+            ServiceDiscovery = serviceDiscovery;
         }
 
         public IConfiguration Configuration { get; }
+        public IServiceDiscovery ServiceDiscovery { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDiscovery(Configuration.GetSection("Service:Application"), builder =>
-            {
-                builder
-                    .AddZookeeper(Configuration.GetSection("service:Zookeeper"))
-                    .AddMemory(Configuration.GetSection("service:memory"));
-                //builder.AddConsul(Configuration.GetSection("service:consul"));
-
-            });
-
             services.AddMvc();
         }
 

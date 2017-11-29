@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Consul" Version="0.7.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Rainbow.ServiceDiscovery.Consul\Rainbow.ServiceDiscovery.Consul.csproj" />
+    <ProjectReference Include="..\..\src\Rainbow.ServiceDiscovery.Proxy.Http\Rainbow.ServiceDiscovery.Proxy.Http.csproj" />
     <ProjectReference Include="..\..\src\Rainbow.ServiceDiscovery.Zookeeper\Rainbow.ServiceDiscovery.Zookeeper.csproj" />
     <ProjectReference Include="..\..\src\Rainbow.ServiceDiscovery\Rainbow.ServiceDiscovery.csproj" />
   </ItemGroup>

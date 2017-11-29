@@ -20,13 +20,32 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(config =>
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("hosting.json", optional: true)
+                .AddCommandLine(args)
+                .Build();
+
+            return WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(builder =>
                 {
-                    config.AddJsonFile("services.json", false, true);
+                    builder.AddJsonFile("services.json", false, true);
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddDiscovery(context.Configuration.GetSection("Service:Application"), builder =>
+                    {
+                        builder
+                            .AddZookeeper(context.Configuration.GetSection("service:Zookeeper"))
+                            .AddMemory(context.Configuration.GetSection("service:memory"));
+                    });
                 })
                 .UseStartup<Startup>()
+                .UseConfiguration(config)
                 .Build();
+
+        }
     }
 }

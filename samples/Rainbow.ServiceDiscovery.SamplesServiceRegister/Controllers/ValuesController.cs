@@ -5,26 +5,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Rainbow.ServiceDiscovery.Abstractions;
 using Microsoft.Extensions.Configuration;
+using Rainbow.ServiceDiscovery.Proxy.Http;
+using Microsoft.Extensions.Logging;
+using Rainbow.ServiceDiscovery.SamplesServiceRegister.Services;
 
 namespace Rainbow.ServiceDiscovery.SamplesServiceRegister.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        private readonly IServiceDiscovery _serviceDiscovery;
-        private readonly IConfiguration _config;
-        public ValuesController(IServiceDiscovery serviceDiscovery, IConfiguration config)
-        {
-            this._serviceDiscovery = serviceDiscovery;
-            this._config = config;
-        }
 
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            var appName = this._config.GetValue<string>("service:Application:name");
-            var a = this._serviceDiscovery.GetEndpoints(appName);
             return new string[] { "value1", "value2" };
         }
 
@@ -32,6 +26,7 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
+
             return "value";
         }
 

@@ -8,7 +8,7 @@ namespace Rainbow.ServiceDiscovery.Proxy.Http
 {
     public class ServiceInvokeContext
     {
-        public ServiceInvokeContext(ServiceEndpoint serviceEndpoint, Type service, MethodInfo method, object[] args)
+        public ServiceInvokeContext(IServiceEndpoint serviceEndpoint, Type service, MethodInfo method, object[] args)
         {
             this.ServiceEndpoint = serviceEndpoint;
             this.Service = service;
@@ -16,7 +16,7 @@ namespace Rainbow.ServiceDiscovery.Proxy.Http
             this.Args = args;
         }
 
-        public ServiceEndpoint ServiceEndpoint { get; private set; }
+        public IServiceEndpoint ServiceEndpoint { get; private set; }
         public MethodInfo Method { get; private set; }
         public Type Service { get; private set; }
         public object[] Args { get; private set; }
