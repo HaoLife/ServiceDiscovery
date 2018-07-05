@@ -2,7 +2,8 @@
   "Service": {
     "Application": {
       "name": "service",
-      "url": "http://localhost:63052"
+      "Port": 63052,
+      "Path": "/"
     },
     "Zookeeper": {
       "Connection": "127.0.0.1:2181",

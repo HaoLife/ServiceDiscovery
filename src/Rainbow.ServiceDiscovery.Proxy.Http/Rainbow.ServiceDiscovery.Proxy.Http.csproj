@@ -7,10 +7,10 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Reflection.DispatchProxy" Version="4.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Rainbow.ServiceDiscovery.Proxy.Abstractions\Rainbow.ServiceDiscovery.Proxy.Abstractions.csproj" />
     <ProjectReference Include="..\Rainbow.ServiceDiscovery\Rainbow.ServiceDiscovery.csproj" />
   </ItemGroup>
 

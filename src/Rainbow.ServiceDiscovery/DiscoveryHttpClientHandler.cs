@@ -34,8 +34,8 @@ namespace Rainbow.ServiceDiscovery
             var instances = _client.GetEndpoints(current.Host);
             if (instances.Count() > 0)
             {
-                int indx = _random.Next(instances.Count());
-                current = new Uri(instances.ElementAt(indx).ToUri(), current.PathAndQuery);
+                int index = _random.Next(instances.Count());
+                current = new Uri(instances.ElementAt(index).ToUri(), current.PathAndQuery);
             }
             _logger?.LogDebug("LookupService() returning {0} ", current.ToString());
             return current;

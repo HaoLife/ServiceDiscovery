@@ -8,8 +8,11 @@ namespace Rainbow.ServiceDiscovery
 {
     public class ServiceDiscoveryOptions
     {
-        
+
         public string Name { get; set; }
-        public string Url { get; set; }
+
+        public int Port { get; set; }
+        public string Path { get; set; }
+        public string UseScheme { get; set; } = "http";
     }
 }

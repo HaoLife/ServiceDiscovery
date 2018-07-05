@@ -10,9 +10,13 @@ namespace Rainbow.ServiceDiscovery.Zookeeper
     {
         public static string ToPath(this IServiceEndpoint endpoint)
         {
-            return string.Join("/", new string[] { endpoint.Name.GetServiceDirectory(), Uri.EscapeDataString(endpoint.ToUri().ToString()) });
+            return string.Join("/", new string[] { endpoint.ToDirectory(), Uri.EscapeDataString(endpoint.ToUri().ToString()) });
         }
-
+        
+        public static string ToDirectory(this IServiceEndpoint endpoint)
+        {
+            return $"/{ZookeeperDefaults.NameService}/{endpoint.Name}";
+        }
 
     }
 }

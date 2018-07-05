@@ -5,18 +5,18 @@ using System.Text;
 
 namespace Rainbow.ServiceDiscovery.Zookeeper
 {
-    internal static class ZookeeperServiceDirectoryExtensions
+    internal static class ZookeeperServiceNodeExtensions
     {
 
         public static string GetServiceDirectory(this string serviceName)
         {
-            return string.Format("/{0}/{1}", ZookeeperDefaults.NameService, serviceName);
+            return $"/{ZookeeperDefaults.NameService}/{serviceName}";
         }
 
         public static string GetServiceNameByPath(this string path)
         {
             var nodes = path.Split('/');
-            if (nodes.Length != 3)
+            if (nodes.Length >= 3)
                 return string.Empty;
 
             if (string.IsNullOrEmpty(nodes[2]))

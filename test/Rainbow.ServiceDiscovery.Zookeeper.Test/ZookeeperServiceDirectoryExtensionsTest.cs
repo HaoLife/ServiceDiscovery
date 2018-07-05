@@ -8,7 +8,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper.Test
         [Fact]
         public void GetServiceDirectoryEqual()
         {
-            var dir = ZookeeperServiceDirectoryExtensions.GetServiceDirectory("service");
+            var dir = ZookeeperServiceNodeExtensions.GetServiceDirectory("service");
             var source = $"/{ZookeeperDefaults.NameService}/service";
             Assert.Equal(dir, source);
         }
@@ -17,7 +17,7 @@ namespace Rainbow.ServiceDiscovery.Zookeeper.Test
         public void GetServiceNameByPathEqual()
         {
             var path = $"/{ZookeeperDefaults.NameService}/service";
-            var service = ZookeeperServiceDirectoryExtensions.GetServiceNameByPath(path);
+            var service = ZookeeperServiceNodeExtensions.GetServiceNameByPath(path);
 
             Assert.Equal(service, "service");
         }
