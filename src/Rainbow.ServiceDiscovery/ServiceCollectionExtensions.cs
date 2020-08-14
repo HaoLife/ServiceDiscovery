@@ -11,7 +11,7 @@ namespace Rainbow.ServiceDiscovery
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddDiscovery(this IServiceCollection services, IConfiguration configuration, Action<IServiceDiscoveryBuilder> configure)
+        public static IServiceDiscoveryBuilder AddDiscovery(this IServiceCollection services, IConfiguration configuration, Action<IServiceDiscoveryBuilder> configure = null)
         {
             services.Configure<ServiceDiscoveryOptions>(configuration);
 
@@ -19,9 +19,9 @@ namespace Rainbow.ServiceDiscovery
 
             var builder = new ServiceDiscoveryBuilder(services);
 
-            configure(builder);
+            configure?.Invoke(builder);
 
-            return services;
+            return builder;
         }
 
     }

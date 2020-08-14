@@ -33,15 +33,6 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
                 {
                     builder.AddJsonFile("services.json", false, true);
                 })
-                .ConfigureServices((context, services) =>
-                {
-                    services.AddDiscovery(context.Configuration.GetSection("Service:Application"), builder =>
-                    {
-                        builder
-                            .AddZookeeper(context.Configuration.GetSection("service:Zookeeper"))
-                            .AddMemory(context.Configuration.GetSection("service:memory"));
-                    });
-                })
                 .UseStartup<Startup>()
                 .UseConfiguration(config)
                 .Build();

@@ -18,19 +18,22 @@ namespace Rainbow.ServiceDiscovery.SamplesServiceRegister
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env, IServiceDiscovery serviceDiscovery)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            ServiceDiscovery = serviceDiscovery;
         }
 
         public IConfiguration Configuration { get; }
-        public IServiceDiscovery ServiceDiscovery { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            services.AddDiscovery(Configuration.GetSection("Service:Application"))
+                .AddMemory(Configuration.GetSection("service:memory"));
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
