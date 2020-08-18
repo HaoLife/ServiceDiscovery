@@ -1,0 +1,81 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30406.217
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{33F44BCD-7954-4369-80A2-A358167A3D8A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Discovery.Consul", "src\Rainbow.Services.Discovery.Consul\Rainbow.Services.Discovery.Consul.csproj", "{B6E6FCAF-C728-45C8-8961-36115DA4F598}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Registery.Consul", "src\Rainbow.Services.Registery.Consul\Rainbow.Services.Registery.Consul.csproj", "{CBBED488-A8B3-4E69-A86D-5EFE168B1276}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{CAB809B0-CA74-47CB-AB8D-C5130D05E4D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Samples", "samples\Rainbow.Services.Samples\Rainbow.Services.Samples.csproj", "{BCFDE8EF-4C1D-47EC-A56B-DE9438E72985}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery", "src\Rainbow.Services.Registery\Rainbow.Services.Registery.csproj", "{997CABAC-435B-476F-A8ED-5D9F24D72452}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Discovery", "src\Rainbow.Services.Discovery\Rainbow.Services.Discovery.csproj", "{948E074C-D13A-44E4-B402-46DF1C2A5342}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Discovery.Samples", "samples\Rainbow.Services.Discovery.Samples\Rainbow.Services.Discovery.Samples.csproj", "{3698103F-D1DB-4F67-B4DD-992211CF5512}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Discovery.Abstractions", "src\Rainbow.Services.Discovery.Abstractions\Rainbow.Services.Discovery.Abstractions.csproj", "{395FA1A2-4A88-4A50-A661-79240790F148}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery.Abstractions", "src\Rainbow.Services.Registery.Abstractions\Rainbow.Services.Registery.Abstractions.csproj", "{076A635A-1291-4B12-88A4-DFEF42A230EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6E6FCAF-C728-45C8-8961-36115DA4F598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6E6FCAF-C728-45C8-8961-36115DA4F598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6E6FCAF-C728-45C8-8961-36115DA4F598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6E6FCAF-C728-45C8-8961-36115DA4F598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBBED488-A8B3-4E69-A86D-5EFE168B1276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBBED488-A8B3-4E69-A86D-5EFE168B1276}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBBED488-A8B3-4E69-A86D-5EFE168B1276}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBBED488-A8B3-4E69-A86D-5EFE168B1276}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCFDE8EF-4C1D-47EC-A56B-DE9438E72985}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCFDE8EF-4C1D-47EC-A56B-DE9438E72985}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCFDE8EF-4C1D-47EC-A56B-DE9438E72985}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCFDE8EF-4C1D-47EC-A56B-DE9438E72985}.Release|Any CPU.Build.0 = Release|Any CPU
+		{997CABAC-435B-476F-A8ED-5D9F24D72452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{997CABAC-435B-476F-A8ED-5D9F24D72452}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{997CABAC-435B-476F-A8ED-5D9F24D72452}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{997CABAC-435B-476F-A8ED-5D9F24D72452}.Release|Any CPU.Build.0 = Release|Any CPU
+		{948E074C-D13A-44E4-B402-46DF1C2A5342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{948E074C-D13A-44E4-B402-46DF1C2A5342}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{948E074C-D13A-44E4-B402-46DF1C2A5342}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{948E074C-D13A-44E4-B402-46DF1C2A5342}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3698103F-D1DB-4F67-B4DD-992211CF5512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3698103F-D1DB-4F67-B4DD-992211CF5512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3698103F-D1DB-4F67-B4DD-992211CF5512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3698103F-D1DB-4F67-B4DD-992211CF5512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{395FA1A2-4A88-4A50-A661-79240790F148}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{395FA1A2-4A88-4A50-A661-79240790F148}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{395FA1A2-4A88-4A50-A661-79240790F148}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{395FA1A2-4A88-4A50-A661-79240790F148}.Release|Any CPU.Build.0 = Release|Any CPU
+		{076A635A-1291-4B12-88A4-DFEF42A230EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{076A635A-1291-4B12-88A4-DFEF42A230EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{076A635A-1291-4B12-88A4-DFEF42A230EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{076A635A-1291-4B12-88A4-DFEF42A230EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B6E6FCAF-C728-45C8-8961-36115DA4F598} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
+		{CBBED488-A8B3-4E69-A86D-5EFE168B1276} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
+		{BCFDE8EF-4C1D-47EC-A56B-DE9438E72985} = {CAB809B0-CA74-47CB-AB8D-C5130D05E4D9}
+		{997CABAC-435B-476F-A8ED-5D9F24D72452} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
+		{948E074C-D13A-44E4-B402-46DF1C2A5342} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
+		{3698103F-D1DB-4F67-B4DD-992211CF5512} = {CAB809B0-CA74-47CB-AB8D-C5130D05E4D9}
+		{395FA1A2-4A88-4A50-A661-79240790F148} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
+		{076A635A-1291-4B12-88A4-DFEF42A230EA} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B5C9BDD1-CFA6-4EFD-8111-566B69B616EC}
+	EndGlobalSection
+EndGlobal

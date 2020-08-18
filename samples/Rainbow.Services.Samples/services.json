@@ -1,0 +1,18 @@
+{
+  "application": {
+    "name": "samples",
+    "port": 5003,
+    "host": "localhost",
+    "path": "/",
+    "protocol": "https"
+  },
+  "register": {
+    "consul": {
+      "address": "http://localhost:8500/",
+      "check": true,
+      "checkPath": "health",
+      "checkInterval": "0:0:10",
+      "checkTimeout": "0:0:10"
+    }
+  }
+}

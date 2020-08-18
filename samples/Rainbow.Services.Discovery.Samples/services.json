@@ -1,0 +1,30 @@
+{
+  "application": {
+    "name": "discovery_samples",
+    "port": 5001,
+    "host": "localhost",
+    "path": "/",
+    "protocol": "https"
+  },
+  "register": {
+    "consul": {
+      "address": "http://localhost:8500/",
+      "check": true,
+      "checkPath": "health",
+      "checkInterval": "0:0:10",
+      "checkTimeout": "0:0:10"
+    }
+  },
+  "discovery": {
+    "consul": {
+      "address": "http://localhost:8500/",
+      "waitTime": "00:00:08"
+
+    },
+    "memory": {
+      "services": {
+        "samples": "http://localhost:63052"
+      }
+    }
+  }
+}
