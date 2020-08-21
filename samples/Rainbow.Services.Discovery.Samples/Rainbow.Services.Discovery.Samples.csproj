@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Rainbow.ServiceDiscovery.Proxy.Http\Rainbow.ServiceDiscovery.Proxy.Http.csproj" />
+    <ProjectReference Include="..\..\src\Rainbow.ServiceDiscovery.Proxy\Rainbow.ServiceDiscovery.Proxy.csproj" />
     <ProjectReference Include="..\..\src\Rainbow.Services.Discovery.Consul\Rainbow.Services.Discovery.Consul.csproj" />
     <ProjectReference Include="..\..\src\Rainbow.Services.Discovery\Rainbow.Services.Discovery.csproj" />
     <ProjectReference Include="..\..\src\Rainbow.Services.Registery.Consul\Rainbow.Services.Registery.Consul.csproj" />

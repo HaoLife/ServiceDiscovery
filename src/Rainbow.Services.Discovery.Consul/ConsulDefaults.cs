@@ -10,7 +10,7 @@ namespace Rainbow.Services.Discovery.Consul
         public static readonly string Protocol = "protocol";
 
         public static readonly string ProtocolValue = "http";
-        public static readonly string PathValue = "/";
+        public static readonly string PathValue = "";
 
         public static readonly string HealthStatusPassing = "passing";
     }

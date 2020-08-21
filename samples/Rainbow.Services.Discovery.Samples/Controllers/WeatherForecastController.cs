@@ -23,7 +23,7 @@ namespace Rainbow.Services.Discovery.Samples.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpDelete]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();

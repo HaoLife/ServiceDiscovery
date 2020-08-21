@@ -23,7 +23,7 @@
     },
     "memory": {
       "services": {
-        "samples": "http://localhost:63052"
+        "samples": "http://localhost:5003"
       }
     }
   }
