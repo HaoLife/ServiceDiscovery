@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Rainbow.Services.Registery;
 using System;
 using System.Collections.Generic;
@@ -10,38 +8,22 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceProviderExtensions
     {
-        public static IApplicationBuilder UseRegistery(this IApplicationBuilder app)
+        public static IServiceProvider UseRegistery(this IServiceProvider provider)
         {
-            var registery = app.ApplicationServices.GetRequiredService<IServiceRegistery>();
+            var registery = provider.GetRequiredService<IServiceRegistery>();
             registery.Register();
 
-            return app;
+            return provider;
         }
 
 
-        public static IApplicationBuilder UseDeregister(this IApplicationBuilder app)
+        public static IServiceProvider UseDeregister(this IServiceProvider provider)
         {
-            var registery = app.ApplicationServices.GetRequiredService<IServiceRegistery>();
+            var registery = provider.GetRequiredService<IServiceRegistery>();
             registery.Deregister();
 
-            return app;
+            return provider;
         }
 
-
-        public static IApplicationBuilder UseRegisteryAndHealth(this IApplicationBuilder app, string healthPath)
-        {
-            var registery = app.ApplicationServices.GetRequiredService<IServiceRegistery>();
-            registery.Register();
-
-            app.Map(healthPath, builder =>
-            {
-                builder.Run(async context =>
-                {
-                    await context.Response.WriteAsync("Healthy");
-                });
-            });
-
-            return app;
-        }
     }
 }

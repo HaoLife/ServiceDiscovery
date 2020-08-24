@@ -29,6 +29,8 @@ namespace Rainbow.Services.Discovery.Samples
         {
             services.AddControllers();
 
+            services.AddHealthChecks();
+
             services.AddRegistery(Configuration.GetSection("application"))
                 .AddConsul(Configuration.GetSection("register:consul"));
 
@@ -65,11 +67,12 @@ namespace Rainbow.Services.Discovery.Samples
                 endpoints.MapControllers();
             });
 
-            app.UseRegisteryAndHealth("/health");
+            app.ApplicationServices.UseRegistery();
+            app.UseHealthChecks("/health");
 
             var ls = discovery.GetEndpoints("samples");
 
-            lifetime.ApplicationStopped.Register(() => app.UseDeregister());
+            lifetime.ApplicationStopped.Register(() => app.ApplicationServices.UseDeregister());
 
             var proxy = app.ApplicationServices.GetService<IServiceProxy>();
             var list = proxy.Create<IWeatherForecastService>().Get();

@@ -53,11 +53,11 @@ namespace Rainbow.Services.Samples
 
             //app.UseRegisteryAndHealth("/health");
 
-            app.UseRegistery();
+            app.ApplicationServices.UseRegistery();
             app.UseHealthChecks("/health");
 
 
-            lifetime.ApplicationStopped.Register(() => app.UseDeregister());
+            lifetime.ApplicationStopped.Register(() => app.ApplicationServices.UseDeregister());
 
         }
     }
