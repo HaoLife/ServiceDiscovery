@@ -41,6 +41,8 @@ namespace Rainbow.ServiceDiscovery.Proxy.Http
         {
             var endpoints = _httpServiceProxyProvider.Discovery.GetEndpoints(_descriptor.ServiceName);
 
+            if (!endpoints.Any()) throw new ProxyInvokeException($"no {_descriptor.ServiceName} service was found.");
+
             int index = _random.Next(endpoints.Count());
             var endpoint = endpoints.ElementAt(index);
 
