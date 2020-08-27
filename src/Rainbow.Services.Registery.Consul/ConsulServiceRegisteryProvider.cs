@@ -31,7 +31,7 @@ namespace Rainbow.Services.Registery.Consul
         {
             var client = _client;
             this._options = new ConsulServiceRegisteryOptions(_source.Configuration);
-            this._client =  new ConsulClient(SetConsulConfig);
+            this._client = new ConsulClient(SetConsulConfig);
             client?.Dispose();
         }
 
@@ -62,15 +62,31 @@ namespace Rainbow.Services.Registery.Consul
                     { ConsulDefaults.Path, application.Path }
                 },
             };
-            if (_options.Check)
+            var checks = new List<GrpcAgentServiceCheck>();
+            if (_options.HttpCheck)
             {
-                register.Check = new AgentServiceCheck
+                checks.Add(new GrpcAgentServiceCheck
                 {
                     HTTP = Path.Combine($"{application.Protocol}://{application.Host}:{application.Port}{application.Path}", _options.CheckPath),
                     Interval = _options.CheckInterval,
                     Timeout = _options.CheckTimeout,
-                };
+                }
+                );
             }
+            if (_options.GrpcCheck)
+            {
+                var host = string.IsNullOrEmpty(_options.GrpcHost) ? application.Host : _options.GrpcHost;
+                // grpc 
+                checks.Add(new GrpcAgentServiceCheck()
+                {
+                    Grpc = $"{host}:{application.Port}{application.Path}",
+                    GRPCUseTLS = _options.GrpcTls,
+                    Interval = _options.CheckInterval,
+                    Timeout = _options.CheckTimeout,
+                });
+            }
+
+            register.Checks = checks.ToArray();
 
 
             var result = this._client.Agent.ServiceRegister(register).GetAwaiter().GetResult();

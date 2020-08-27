@@ -9,7 +9,7 @@
   "register": {
     "consul": {
       "address": "http://localhost:8500/",
-      "check": true,
+      "httpCheck": true,
       "checkPath": "health",
       "checkInterval": "0:0:10",
       "checkTimeout": "0:0:10"
