@@ -9,9 +9,9 @@
   "register": {
     "consul": {
       "address": "http://localhost:8500/",
-      "httpCheck": false,
+      "httpCheck": true,
       "checkPath": "health",
-      "grpcCheck": true,
+      "grpcCheck": false,
       "grpcTls": false,
       "checkInterval": "0:0:10",
       "checkTimeout": "0:0:10"

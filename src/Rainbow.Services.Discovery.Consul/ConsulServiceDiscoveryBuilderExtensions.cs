@@ -9,9 +9,9 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ConsulServiceDiscoveryBuilderExtensions
     {
-        public static IServiceDiscoveryBuilder AddConsul(this IServiceDiscoveryBuilder builder, IConfiguration configuration)
+        public static IServiceDiscoveryBuilder AddConsul(this IServiceDiscoveryBuilder builder, IConfiguration configuration, bool isAsync = false)
         {
-            var source = new ConsulServiceDiscoverySource(configuration);
+            var source = new ConsulServiceDiscoverySource(configuration, isAsync);
             builder.ServiceCollection.AddSingleton<IServiceDiscoveryProvider>(source.Build);
             return builder;
         }

@@ -8,11 +8,13 @@ namespace Rainbow.Services.Discovery.Consul
     public class ConsulServiceDiscoverySource : IServiceDiscoverySource
     {
         public IConfiguration Configuration { get; set; }
+        public bool IsAsync { get; set; }
 
 
-        public ConsulServiceDiscoverySource(IConfiguration configuration)
+        public ConsulServiceDiscoverySource(IConfiguration configuration, bool isAsync)
         {
             this.Configuration = configuration;
+            this.IsAsync = isAsync;
         }
 
         public IServiceDiscoveryProvider Build(IServiceProvider privider)

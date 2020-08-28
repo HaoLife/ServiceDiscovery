@@ -62,7 +62,7 @@ namespace Rainbow.Services.Discovery.Consul
             return _reloadToken;
         }
 
-        public void Load()
+        private void LoadData()
         {
             _reloadToken = new ServiceDiscoveryReloadToken();
             LoadServices();
@@ -72,19 +72,57 @@ namespace Rainbow.Services.Discovery.Consul
             {
                 while (true)
                 {
-                    var ck = GetConsuleHealth();
-                    _logger.LogDebug($"get health {ck.LastIndex}");
-                    if (this.lastIndex != ck.LastIndex)
+                    try
                     {
-                        _logger.LogInformation($"reload get index {ck.LastIndex} current {this.lastIndex}");
-                        _reloadToken.OnReload();
-                        break;
+                        var ck = GetConsuleHealth();
+                        _logger.LogDebug($"get health {ck.LastIndex}");
+                        if (this.lastIndex != ck.LastIndex)
+                        {
+                            _logger.LogInformation($"reload get index {ck.LastIndex} current {this.lastIndex}");
+                            _reloadToken.OnReload();
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"get health error : {ex.Message}");
+                        Thread.Sleep(Convert.ToInt32(this._options.WaitTime.TotalMilliseconds));
                     }
 
 
                 }
             }, TaskCreationOptions.LongRunning);
         }
+
+
+        public void Load()
+        {
+            if (this._source.IsAsync)
+            {
+                this.AsyncLoadData();
+            }
+            else
+            {
+                this.LoadData();
+            }
+        }
+        private void AsyncLoadData()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    this.LoadData();
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(Convert.ToInt32(this._options.WaitTime.TotalMilliseconds));
+                    this.AsyncLoadData();
+                }
+
+            });
+        }
+
 
         private QueryResult<HealthCheck[]> GetConsuleHealth()
         {

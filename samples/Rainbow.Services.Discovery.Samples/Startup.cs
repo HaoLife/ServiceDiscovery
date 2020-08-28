@@ -31,12 +31,12 @@ namespace Rainbow.Services.Discovery.Samples
 
             services.AddHealthChecks();
 
-            services.AddRegistery(Configuration.GetSection("application"))
-                .AddConsul(Configuration.GetSection("register:consul"));
+            //services.AddRegistery(Configuration.GetSection("application"))
+            //    .AddConsul(Configuration.GetSection("register:consul"));
 
             services.AddDiscovery()
                 //.AddMemory(Configuration.GetSection("discovery:memory"))
-                .AddConsul(Configuration.GetSection("discovery:consul"));
+                .AddConsul(Configuration.GetSection("discovery:consul"), true);
 
             //services.AddProxyService()
 
@@ -49,7 +49,7 @@ namespace Rainbow.Services.Discovery.Samples
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceDiscovery discovery, IHostApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {
             if (env.IsDevelopment())
             {
@@ -67,15 +67,14 @@ namespace Rainbow.Services.Discovery.Samples
                 endpoints.MapControllers();
             });
 
-            app.ApplicationServices.UseRegistery();
-            app.UseHealthChecks("/health");
+            //app.ApplicationServices.UseRegistery();
+            //app.UseHealthChecks("/health");
+            //lifetime.ApplicationStopped.Register(() => app.ApplicationServices.UseDeregister());
 
-            var ls = discovery.GetEndpoints("samples");
+            //var ls = discovery.GetEndpoints("samples");
 
-            lifetime.ApplicationStopped.Register(() => app.ApplicationServices.UseDeregister());
-
-            var proxy = app.ApplicationServices.GetService<IServiceProxy>();
-            var list = proxy.Create<IWeatherForecastService>().Get();
+            //var proxy = app.ApplicationServices.GetService<IServiceProxy>();
+            //var list = proxy.Create<IWeatherForecastService>().Get();
         }
     }
 }
