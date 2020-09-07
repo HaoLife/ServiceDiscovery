@@ -15,7 +15,8 @@ namespace Rainbow.ServiceDiscovery.Proxy.Http
         public HttpServiceProxyProvider(
             HttpServiceProxySource source,
             ILoggerFactory loggerFactory,
-            IServiceDiscovery serviceDiscovery)
+            IServiceDiscovery serviceDiscovery,
+            ILoadBalancer loadBalancer)
         {
             if (source == null)
             {
@@ -24,13 +25,14 @@ namespace Rainbow.ServiceDiscovery.Proxy.Http
             this._source = source;
             this.LoggerFactory = loggerFactory;
             this.Discovery = serviceDiscovery;
-
+            LoadBalancer = loadBalancer;
             this.ContentFormatters = this.InitContentFormaters();
 
         }
 
         public ILoggerFactory LoggerFactory { get; set; }
         public IServiceDiscovery Discovery { get; set; }
+        public ILoadBalancer LoadBalancer { get; }
         public List<IContentFormatter> ContentFormatters { get; private set; }
 
         public HttpServiceProxyOptions Options => this._source.Options;

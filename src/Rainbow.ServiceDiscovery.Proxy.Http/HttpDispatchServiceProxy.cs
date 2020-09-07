@@ -39,12 +39,9 @@ namespace Rainbow.ServiceDiscovery.Proxy.Http
 
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {
-            var endpoints = _httpServiceProxyProvider.Discovery.GetEndpoints(_descriptor.ServiceName);
+            var endpoint =
+                this._httpServiceProxyProvider.LoadBalancer.Get(_httpServiceProxyProvider.Discovery, _descriptor.ServiceName);
 
-            if (!endpoints.Any()) throw new ProxyInvokeException($"no {_descriptor.ServiceName} service was found.");
-
-            int index = _random.Next(endpoints.Count());
-            var endpoint = endpoints.ElementAt(index);
 
             UriBuilder builder = new UriBuilder($"{endpoint.Protocol}://{endpoint.Host}:{endpoint.Port}");
 
