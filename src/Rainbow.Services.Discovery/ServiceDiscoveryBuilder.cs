@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,12 +6,28 @@ namespace Rainbow.Services.Discovery
 {
     public class ServiceDiscoveryBuilder : IServiceDiscoveryBuilder
     {
-        public IServiceCollection ServiceCollection { get; set; }
+        public IList<IServiceDiscoverySource> Sources { get; } = new List<IServiceDiscoverySource>();
 
-        public ServiceDiscoveryBuilder(IServiceCollection serviceCollection)
+        public ServiceDiscoveryBuilder Add(IServiceDiscoverySource source)
         {
-            this.ServiceCollection = serviceCollection;
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            Sources.Add(source);
+            return this;
         }
 
+        public IServiceDiscovery Build(IServiceProvider services)
+        {
+            var providers = new List<IServiceDiscoveryProvider>();
+            foreach (var source in Sources)
+            {
+                var provider = source.Build(services);
+                providers.Add(provider);
+            }
+            return new ServiceDiscovery(providers);
+        }
     }
 }

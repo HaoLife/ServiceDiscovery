@@ -10,8 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Rainbow.ServiceDiscovery.Proxy;
 using Rainbow.Services.Discovery.Samples.Services;
+using Rainbow.Services.Proxy;
 
 namespace Rainbow.Services.Discovery.Samples
 {
@@ -34,18 +34,22 @@ namespace Rainbow.Services.Discovery.Samples
             //services.AddRegistery(Configuration.GetSection("application"))
             //    .AddConsul(Configuration.GetSection("register:consul"));
 
+
             services.AddDiscovery()
-                //.AddMemory(Configuration.GetSection("discovery:memory"))
-                .AddConsul(Configuration.GetSection("discovery:consul"), true);
+                .AddMemory(Configuration.GetSection("discovery:memory"))
+                .AddConsul(Configuration.GetSection("discovery:consul"), true, true);
 
             //services.AddProxyService()
 
             services.AddServiceProxy()
-                .AddHttp();
+                .AddHttp()
+                .AddRollPolling()
+                .AddHttpProxy<IWeatherForecastService>("samples")
+                ;
 
 
-            services.AddHttpProxy()
-                .Add<IWeatherForecastService>("samples");
+            //services.AddHttpProxy()
+            //    .Add<IWeatherForecastService>("samples");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

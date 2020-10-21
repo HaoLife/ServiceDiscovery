@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Rainbow.Services.Registery.AspNetCore\Rainbow.Services.Registery.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\Rainbow.Services.Registery.Consul\Rainbow.Services.Registery.Consul.csproj" />
-    <ProjectReference Include="..\..\src\Rainbow.Services.Registery\Rainbow.Services.Registery.csproj" />
   </ItemGroup>
 
 

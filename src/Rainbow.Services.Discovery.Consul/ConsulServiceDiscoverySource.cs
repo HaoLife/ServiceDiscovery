@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Rainbow.Services.Discovery.Consul
 {
@@ -9,18 +10,12 @@ namespace Rainbow.Services.Discovery.Consul
     {
         public IConfiguration Configuration { get; set; }
         public bool IsAsync { get; set; }
+        public bool ReloadOnChange { get; set; }
 
 
-        public ConsulServiceDiscoverySource(IConfiguration configuration, bool isAsync)
+        public IServiceDiscoveryProvider Build(IServiceProvider services)
         {
-            this.Configuration = configuration;
-            this.IsAsync = isAsync;
-        }
-
-        public IServiceDiscoveryProvider Build(IServiceProvider privider)
-        {
-            var factory = privider.GetRequiredService<ILoggerFactory>();
-            return new ConsulServiceDiscoveryProvider(this, factory);
+            return new ConsulServiceDiscoveryProvider(this, services);
         }
     }
 }

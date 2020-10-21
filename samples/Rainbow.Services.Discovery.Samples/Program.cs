@@ -22,6 +22,10 @@ namespace Rainbow.Services.Discovery.Samples
                 {
                     builder.AddJsonFile("services.json", false, true);
                 })
+                .ConfigureLogging((context, builder) =>
+                {
+                    builder.AddConsole();
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

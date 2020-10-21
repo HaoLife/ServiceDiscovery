@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Rainbow.Services.Registery;
+using Rainbow.Services.Registery.Consul;
 
 namespace Rainbow.Services.Samples
 {
@@ -28,6 +30,32 @@ namespace Rainbow.Services.Samples
             services.AddControllers();
 
             services.AddHealthChecks();
+
+            //var app = new ServiceApplication();
+            //Configuration.GetSection("application").Bind(app);
+
+            //var options = new ConsulServiceRegisteryOptions();
+            //Configuration.GetSection("register:consul").Bind(options);
+
+            //var builder = new ServiceRegisteryBuilder();
+            //builder.SetApplication(app);
+            //builder.Add(new ConsulServiceRegisterySource(options));
+
+            //builder.Build();
+
+
+            //services.AddRegistery(Configuration.GetSection("application"), (builder) =>
+            //{
+            //    builder
+            //        .AddConsul(Configuration.GetSection("register:consul"));
+            //});
+
+            //services.AddRegistery((builder) =>
+            //{
+            //    builder.SetApplication(Configuration.GetSection("application"))
+            //        .AddConsul(Configuration.GetSection("register:consul"));
+            //});
+
             services.AddRegistery(Configuration.GetSection("application"))
                 .AddConsul(Configuration.GetSection("register:consul"));
         }
@@ -51,13 +79,14 @@ namespace Rainbow.Services.Samples
                 endpoints.MapControllers();
             });
 
-            //app.UseRegisteryAndHealth("/health");
 
-            app.ApplicationServices.UseRegistery();
+            //app.ApplicationServices.UseRegistery();
             app.UseHealthChecks("/health");
 
+            app.UseRegistery(lifetime);
 
-            lifetime.ApplicationStopped.Register(() => app.ApplicationServices.UseDeregister());
+
+            //lifetime.ApplicationStopped.Register(() => app.ApplicationServices.UseDeregister());
 
         }
     }

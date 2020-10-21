@@ -1,53 +1,40 @@
 ﻿using Consul;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Rainbow.Services.Registery.Consul
 {
     public class ConsulServiceRegisteryProvider : IServiceRegisteryProvider
     {
-        private readonly IServiceProvider provider;
-        private readonly ConsulServiceRegisterySource _source;
+        private readonly IServiceRegisteryBuilder builder;
+        private readonly ConsulServiceRegisterySource source;
         private ConsulClient _client;
-        private ConsulServiceRegisteryOptions _options;
 
-        public ConsulServiceRegisteryProvider(
-            IServiceProvider provider,
-            ConsulServiceRegisterySource source)
+        public ConsulServiceRegisteryProvider(IServiceRegisteryBuilder builder, ConsulServiceRegisterySource source)
         {
-            this.provider = provider;
-            this._source = source;
-
-            this.Load();
+            this.builder = builder;
+            this.source = source;
         }
 
-        public void Load()
+        public void Deregister()
         {
-            var client = _client;
-            this._options = new ConsulServiceRegisteryOptions(_source.Configuration);
+            var application = builder.Application;
+            var id = $"{application.Name}-{application.Protocol}-{application.Host}-{application.Port}";
+            var result = this._client.Agent.ServiceDeregister(id).GetAwaiter().GetResult();
+        }
+
+        public void Register()
+        {
+            this._client?.Dispose();
+
             this._client = new ConsulClient(SetConsulConfig);
-            client?.Dispose();
-        }
 
-        private void SetConsulConfig(ConsulClientConfiguration config)
-        {
-            config.Address = _options.Address;
-        }
-
-        public IChangeToken GetReloadToken()
-        {
-            return _source.Configuration.GetReloadToken();
-        }
+            var application = builder.Application;
+            var options = this.source.Options;
 
 
-        public void Register(IServiceApplication application)
-        {
             var register = new AgentServiceRegistration()
             {
                 Address = application.Host,
@@ -58,31 +45,31 @@ namespace Rainbow.Services.Registery.Consul
                     $"{application.Name}",
                 },
                 Meta = new Dictionary<string, string>() {
-                    { ConsulDefaults.Protocol, application.Protocol },
+                    { ConsulDefaults.Protocol,application.Protocol },
                     { ConsulDefaults.Path, application.Path }
                 },
             };
             var checks = new List<GrpcAgentServiceCheck>();
-            if (_options.HttpCheck)
+            if (options.HttpCheck)
             {
                 checks.Add(new GrpcAgentServiceCheck
                 {
-                    HTTP = Path.Combine($"{application.Protocol}://{application.Host}:{application.Port}{application.Path}", _options.CheckPath),
-                    Interval = _options.CheckInterval,
-                    Timeout = _options.CheckTimeout,
+                    HTTP = application.ToUrl(options.CheckPath),
+                    Interval = options.CheckInterval,
+                    Timeout = options.CheckTimeout,
                 }
                 );
             }
-            if (_options.GrpcCheck)
+            if (options.GrpcCheck)
             {
-                var host = string.IsNullOrEmpty(_options.GrpcHost) ? application.Host : _options.GrpcHost;
+                var host = string.IsNullOrEmpty(options.GrpcHost) ? application.Host : options.GrpcHost;
                 // grpc 
                 checks.Add(new GrpcAgentServiceCheck()
                 {
                     Grpc = $"{host}:{application.Port}{application.Path}",
-                    GRPCUseTLS = _options.GrpcTls,
-                    Interval = _options.CheckInterval,
-                    Timeout = _options.CheckTimeout,
+                    GRPCUseTLS = options.GrpcTls,
+                    Interval = options.CheckInterval,
+                    Timeout = options.CheckTimeout,
                 });
             }
 
@@ -93,16 +80,14 @@ namespace Rainbow.Services.Registery.Consul
 
             if (result.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                throw new RegisteryException($"注册失败:{result.StatusCode}");
+                throw new RegisteryException(this, $"注册失败:{result.StatusCode}");
             }
-        }
 
-        public void Deregister(IServiceApplication application)
+
+        }
+        private void SetConsulConfig(ConsulClientConfiguration config)
         {
-            var id = $"{application.Name}-{application.Protocol}-{application.Host}-{application.Port}";
-            var result = this._client.Agent.ServiceDeregister(id).GetAwaiter().GetResult();
-
+            config.Address = source.Options.Address;
         }
-
     }
 }

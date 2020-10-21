@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,16 +6,17 @@ namespace Rainbow.Services.Registery.Consul
 {
     public class ConsulServiceRegisterySource : IServiceRegisterySource
     {
-        public IConfiguration Configuration { get; set; }
 
-
-        public ConsulServiceRegisterySource(IConfiguration configuration)
+        public ConsulServiceRegisterySource(ConsulServiceRegisteryOptions options)
         {
-            this.Configuration = configuration;
+            Options = options;
         }
-        public IServiceRegisteryProvider Build(IServiceProvider privider)
+
+        public ConsulServiceRegisteryOptions Options { get; }
+
+        public IServiceRegisteryProvider Build(IServiceRegisteryBuilder builder)
         {
-            return new ConsulServiceRegisteryProvider(privider, this);
+            return new ConsulServiceRegisteryProvider(builder, this);
         }
     }
 }

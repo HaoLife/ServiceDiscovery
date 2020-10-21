@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Rainbow.Services.Discovery;
 using Rainbow.Services.Discovery.Consul;
 using System;
@@ -9,11 +10,22 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ConsulServiceDiscoveryBuilderExtensions
     {
-        public static IServiceDiscoveryBuilder AddConsul(this IServiceDiscoveryBuilder builder, IConfiguration configuration, bool isAsync = false)
+
+        public static ServiceDiscoveryBuilder AddConsul(this ServiceDiscoveryBuilder builder, IConfiguration configuration, bool reloadOnChange = false, bool isAsync = false)
         {
-            var source = new ConsulServiceDiscoverySource(configuration, isAsync);
-            builder.ServiceCollection.AddSingleton<IServiceDiscoveryProvider>(source.Build);
-            return builder;
+            return builder.AddConsul((c) =>
+            {
+                c.Configuration = configuration;
+                c.ReloadOnChange = reloadOnChange;
+                c.IsAsync = isAsync;
+            });
+        }
+
+        public static ServiceDiscoveryBuilder AddConsul(this ServiceDiscoveryBuilder builder, Action<ConsulServiceDiscoverySource> action = null)
+        {
+            var source = new ConsulServiceDiscoverySource();
+            action?.Invoke(source);
+            return builder.Add(source);
         }
     }
 }

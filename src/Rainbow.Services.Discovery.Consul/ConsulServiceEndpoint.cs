@@ -9,8 +9,6 @@ namespace Rainbow.Services.Discovery.Consul
     {
         public ConsulServiceEndpoint(AgentService agent)
         {
-
-
             var protocol = ConsulDefaults.ProtocolValue;
             var path = ConsulDefaults.PathValue;
 

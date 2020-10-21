@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,15 +6,6 @@ namespace Rainbow.Services.Registery.Consul
 {
     public class ConsulServiceRegisteryOptions
     {
-        public ConsulServiceRegisteryOptions()
-        {
-
-        }
-        public ConsulServiceRegisteryOptions(IConfiguration configuration)
-        {
-            ConfigurationBinder.Bind(configuration, this);
-        }
-
         public Uri Address { get; set; } = new Uri("http://localhost:8500/");
         public bool HttpCheck { get; set; } = false;
         public string CheckPath { get; set; }
@@ -26,6 +16,5 @@ namespace Rainbow.Services.Registery.Consul
         public bool GrpcCheck { get; set; } = false;
         public string GrpcHost { get; set; } = "";
         public bool GrpcTls { get; set; } = true;
-
     }
 }

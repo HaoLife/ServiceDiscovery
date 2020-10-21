@@ -1,4 +1,6 @@
 ﻿using Consul;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using System;
@@ -12,39 +14,34 @@ namespace Rainbow.Services.Discovery.Consul
 {
     public class ConsulServiceDiscoveryProvider : IServiceDiscoveryProvider
     {
+        private ulong lastIndex = 0L;
         private ConsulClient _client;
+        private readonly ConsulServiceDiscoverySource source;
+        private readonly IServiceProvider services;
         private ConsulServiceDiscoveryOptions _options;
-        private ConsulServiceDiscoverySource _source;
-        private ServiceDiscoveryReloadToken _reloadToken = new ServiceDiscoveryReloadToken();
         private SortedDictionary<string, IEnumerable<IServiceEndpoint>> _cache = new SortedDictionary<string, IEnumerable<IServiceEndpoint>>();
         private ILogger _logger;
 
-        private ulong lastIndex = 0L;
-
-        public ConsulServiceDiscoveryProvider(
-            ConsulServiceDiscoverySource source,
-            ILoggerFactory loggerFactory)
+        public ConsulServiceDiscoveryProvider(ConsulServiceDiscoverySource source, IServiceProvider services)
         {
-            if (source == null)
+            this.source = source;
+            this.services = services;
+            this._logger = services.GetRequiredService<ILoggerFactory>().CreateLogger<ConsulServiceDiscoveryProvider>();
+
+            if (source.ReloadOnChange)
             {
-                throw new ArgumentNullException(nameof(source));
+                ChangeToken.OnChange(() => source.Configuration.GetReloadToken(), () => this.Load());
             }
-            this._source = source;
-            this._options = new ConsulServiceDiscoveryOptions(source.Configuration);
-            this._logger = loggerFactory.CreateLogger<ConsulServiceDiscoveryProvider>();
-
-            ChangeToken.OnChange(source.Configuration.GetReloadToken, RaiseChanged);
-
-            _client = new ConsulClient(SetConsulConfig);
-
         }
 
-
-        private void RaiseChanged()
+        public void Load()
         {
-            this._options = new ConsulServiceDiscoveryOptions(this._source.Configuration);
+            this._client?.Dispose();
+            this._options = this.source.Configuration.Get<ConsulServiceDiscoveryOptions>();
             this._client = new ConsulClient(SetConsulConfig);
-            this._reloadToken.OnReload();
+
+            CatchLoadServices();
+            Listening();
         }
 
         private void SetConsulConfig(ConsulClientConfiguration config)
@@ -57,16 +54,8 @@ namespace Rainbow.Services.Discovery.Consul
             return _cache.TryGetValue(serviceName, out endpoints);
         }
 
-        public IChangeToken GetReloadToken()
+        private void Listening()
         {
-            return _reloadToken;
-        }
-
-        private void LoadData()
-        {
-            _reloadToken = new ServiceDiscoveryReloadToken();
-            LoadServices();
-
             //检测是否变更，如果变更则token取消，重新加载
             Task.Factory.StartNew(() =>
             {
@@ -75,52 +64,23 @@ namespace Rainbow.Services.Discovery.Consul
                     try
                     {
                         var ck = GetConsuleHealth();
-                        _logger.LogDebug($"get health {ck.LastIndex}");
+                        _logger.LogDebug($"listening health index :{ck.LastIndex}");
                         if (this.lastIndex != ck.LastIndex)
                         {
-                            _logger.LogInformation($"reload get index {ck.LastIndex} current {this.lastIndex}");
-                            _reloadToken.OnReload();
+                            _logger.LogInformation($"reload services to index : {ck.LastIndex} current index {this.lastIndex}");
+                            LoadServices();
                             break;
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"get health error : {ex.Message}");
+                        _logger.LogError($"listening health error : {ex.Message}");
                         Thread.Sleep(Convert.ToInt32(this._options.WaitTime.TotalMilliseconds));
                     }
 
 
                 }
             }, TaskCreationOptions.LongRunning);
-        }
-
-
-        public void Load()
-        {
-            if (this._source.IsAsync)
-            {
-                this.AsyncLoadData();
-            }
-            else
-            {
-                this.LoadData();
-            }
-        }
-        private void AsyncLoadData()
-        {
-            Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    this.LoadData();
-                }
-                catch (Exception ex)
-                {
-                    Thread.Sleep(Convert.ToInt32(this._options.WaitTime.TotalMilliseconds));
-                    this.AsyncLoadData();
-                }
-
-            });
         }
 
 
@@ -141,20 +101,32 @@ namespace Rainbow.Services.Discovery.Consul
 
         }
 
+        private void CatchLoadServices()
+        {
+            try
+            {
+                LoadServices();
+            }
+            catch (Exception ex)
+            {
+                if (this.source.IsAsync)
+                {
+                    _logger.LogInformation(ex.Message);
+                    return;
+                }
+                throw ex;
+            }
+        }
+
         private void LoadServices()
         {
-            _logger.LogInformation("load consul discovery");
             var ck = GetConsuleHealth();
 
-            _logger.LogInformation($"load consul index { ck.LastIndex}");
 
             if (ck.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                throw new DiscoveryException($"consul load error status code :{ck.StatusCode.GetHashCode()}");
+                throw new DiscoveryException(this, $"consul load error status code :{ck.StatusCode.GetHashCode()}");
             }
-
-            this.lastIndex = ck.LastIndex;
-
 
             var ckServices = ck.Response.Where(a => !string.IsNullOrEmpty(a.ServiceID)).ToDictionary(a => a.ServiceID);
 
@@ -162,7 +134,7 @@ namespace Rainbow.Services.Discovery.Consul
             var servicesResponse = this._client.Agent.Services().GetAwaiter().GetResult();
             if (servicesResponse.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                throw new DiscoveryException($"get services error {servicesResponse.StatusCode}");
+                throw new DiscoveryException(this, $"get services error {servicesResponse.StatusCode}");
             }
 
             List<IServiceEndpoint> endpoints = new List<IServiceEndpoint>();
@@ -173,11 +145,10 @@ namespace Rainbow.Services.Discovery.Consul
                 endpoints.Add(new ConsulServiceEndpoint(item.Value));
 
             }
-
             _cache = new SortedDictionary<string, IEnumerable<IServiceEndpoint>>(endpoints.GroupBy(a => a.Name).ToDictionary(a => a.Key, b => b.AsEnumerable()));
 
+            this.lastIndex = ck.LastIndex;
         }
-
 
     }
 }

@@ -13,7 +13,7 @@ namespace Rainbow.Services.Discovery
         public IServiceEndpoint Get(IServiceDiscovery discovery, string serviceName)
         {
             var endPoint = this.TryGet(discovery, serviceName);
-            if (endPoint == null) throw new DiscoveryException($"no {serviceName} service was found.");
+            if (endPoint == null) throw new Exception($"no {serviceName} service was found.");
             return endPoint;
         }
 
@@ -24,7 +24,7 @@ namespace Rainbow.Services.Discovery
 
             var seq = _catch.GetOrAdd(serviceName, new Sequence());
             var value = seq.Next();
-            int index = (int)(value & endpoints.Count());
+            int index = (int)(value & endpoints.Count() - 1);
             return endpoints.ElementAt(index);
         }
     }

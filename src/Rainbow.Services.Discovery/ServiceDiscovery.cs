@@ -1,47 +1,32 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 
 namespace Rainbow.Services.Discovery
 {
-    public class ServiceDiscovery : IServiceDiscoveryRoot
+    public class ServiceDiscovery : IServiceDiscovery
     {
-        private IList<IServiceDiscoveryProvider> _providers;
+        public IEnumerable<IServiceDiscoveryProvider> Providers { get; }
 
-        public ServiceDiscovery(IEnumerable<IServiceDiscoveryProvider> providers
-            )
+        public ServiceDiscovery(IEnumerable<IServiceDiscoveryProvider> providers)
         {
-            if (providers == null)
-            {
-                throw new ArgumentNullException(nameof(providers));
-            }
-            _providers = providers.ToList();
-            foreach (var p in providers)
-            {
-                p.Load();
-                ChangeToken.OnChange(() => p.GetReloadToken(), () => p.Load());
-            }
-
+            Providers = providers;
+            this.Init();
         }
 
-        public IEnumerable<IServiceDiscoveryProvider> Providers => _providers;
-
-        public void Reload()
+        private void Init()
         {
-            foreach (var provider in _providers)
+            foreach(var item in this.Providers)
             {
-                provider.Load();
+                item.Load();
             }
         }
-
 
         public IEnumerable<IServiceEndpoint> GetEndpoints(string serviceName)
         {
             IEnumerable<IServiceEndpoint> result;
-            foreach (var item in this._providers.Reverse())
+            foreach (var item in this.Providers.Reverse())
             {
                 if (item.TryGetEndpoints(serviceName, out result))
                 {
@@ -51,6 +36,5 @@ namespace Rainbow.Services.Discovery
 
             return Enumerable.Empty<IServiceEndpoint>();
         }
-
     }
 }

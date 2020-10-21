@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Rainbow.Services.Registery;
+﻿using Rainbow.Services.Registery;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,15 +14,5 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return provider;
         }
-
-
-        public static IServiceProvider UseDeregister(this IServiceProvider provider)
-        {
-            var registery = provider.GetRequiredService<IServiceRegistery>();
-            registery.Deregister();
-
-            return provider;
-        }
-
     }
 }

@@ -7,16 +7,11 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceDiscoveryBuilder AddDiscovery(this IServiceCollection services)
+        public static ServiceDiscoveryBuilder AddDiscovery(this IServiceCollection services)
         {
-            services.AddRollPolling();
-
-            services.AddSingleton<IServiceDiscovery, ServiceDiscovery>();
-            services.AddSingleton<IServiceDiscoveryRoot>((provider) => provider.GetRequiredService<IServiceDiscovery>() as IServiceDiscoveryRoot);
-
-            var builder = new ServiceDiscoveryBuilder(services);
+            var builder = new ServiceDiscoveryBuilder();
+            services.AddSingleton<IServiceDiscovery>((provider) => builder.Build(provider));
             return builder;
         }
-
     }
 }
