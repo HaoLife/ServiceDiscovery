@@ -1,8 +1,8 @@
-﻿using Grpc.HealthCheck;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Rainbow.Services.Registery.Consul.GrpcHealthChecks;
 
 namespace Microsoft.AspNetCore.Builder

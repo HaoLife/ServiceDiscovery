@@ -1,7 +1,5 @@
-﻿using Grpc.HealthCheck;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Rainbow.Services.Registery.Consul.GrpcHealthChecks;
 using System;
 
@@ -18,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> for adding services.</param>
         /// <returns>An instance of <see cref="IHealthChecksBuilder"/> from which health checks can be registered.</returns>
-        public static IHealthChecksBuilder AddGrpcHealthChecks(this IServiceCollection services)
+        public static IServiceCollection AddGrpcHealthChecks(this IServiceCollection services)
         {
             if (services == null)
             {
@@ -26,11 +24,9 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             // HealthServiceImpl is designed to be a singleton
-            services.TryAddSingleton<HealthServiceImpl>();
+            services.TryAddSingleton<GrpcHealthService>();
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IHealthCheckPublisher, GrpcHealthChecksPublisher>());
-
-            return services.AddHealthChecks();
+            return services;
         }
     }
 }

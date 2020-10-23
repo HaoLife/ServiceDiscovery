@@ -53,13 +53,11 @@ namespace Rainbow.Services.Grpc.Samples
             {
                 endpoints.MapControllers();
                 endpoints.MapGrpcHealthChecksService();
-                //endpoints.MapGrpcService<global::Grpc.HealthCheck.HealthServiceImpl>();
-                //endpoints.MapGrpcService<Registery.Consul.GrpcHealthChecks.HealthService>();
             });
 
 
 
-            app.UseHealthChecks("/health");
+            //app.UseHealthChecks("/health");
 
             app.UseRegistery(lifetime);
         }
