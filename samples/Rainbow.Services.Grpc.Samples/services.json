@@ -1,0 +1,20 @@
+{
+  "application": {
+    "name": "grpc_samples",
+    "port": 5005,
+    "host": "localhost",
+    "path": "",
+    "protocol": "https"
+  },
+  "register": {
+    "consul": {
+      "address": "http://localhost:8500/",
+      "httpCheck": false,
+      "checkPath": "health",
+      "grpcCheck": true,
+      "grpcTls": true,
+      "checkInterval": "0:0:10",
+      "checkTimeout": "0:0:10"
+    }
+  }
+}

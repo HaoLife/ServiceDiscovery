@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Rainbow.Services.Registery.AspNetCore\Rainbow.Services.Registery.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Rainbow.Services.Registery.Consul\Rainbow.Services.Registery.Consul.csproj" />
+  </ItemGroup>
+
+
+</Project>
