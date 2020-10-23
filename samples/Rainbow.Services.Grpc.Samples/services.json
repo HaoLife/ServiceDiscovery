@@ -12,7 +12,7 @@
       "httpCheck": false,
       "checkPath": "health",
       "grpcCheck": true,
-      "grpcTls": false,
+      "grpcTls": true,
       "checkInterval": "0:0:10",
       "checkTimeout": "0:0:10"
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rainbow.Services.Registery.Consul.GrpcHealthChecks
 {
-    public class HealthService : Grpc.Health.V1.Health.HealthBase
+    public class GrpcHealthService : Grpc.Health.V1.Health.HealthBase
     {
         public override Task<HealthCheckResponse> Check(HealthCheckRequest request, ServerCallContext context)
         {

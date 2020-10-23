@@ -52,9 +52,9 @@ namespace Rainbow.Services.Grpc.Samples
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                //endpoints.MapGrpcHealthChecksService();
+                endpoints.MapGrpcHealthChecksService();
                 //endpoints.MapGrpcService<global::Grpc.HealthCheck.HealthServiceImpl>();
-                endpoints.MapGrpcService<Registery.Consul.GrpcHealthChecks.HealthService>();
+                //endpoints.MapGrpcService<Registery.Consul.GrpcHealthChecks.HealthService>();
             });
 
 

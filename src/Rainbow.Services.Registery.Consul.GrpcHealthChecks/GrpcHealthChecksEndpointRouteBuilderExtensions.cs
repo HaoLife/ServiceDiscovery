@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Routing;
-
+using Rainbow.Services.Registery.Consul.GrpcHealthChecks;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -25,7 +25,7 @@ namespace Microsoft.AspNetCore.Builder
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            return builder.MapGrpcService<HealthServiceImpl>();
+            return builder.MapGrpcService<GrpcHealthService>();
         }
     }
 }
