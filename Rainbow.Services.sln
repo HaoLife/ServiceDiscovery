@@ -11,23 +11,27 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Samples", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Discovery.Samples", "samples\Rainbow.Services.Discovery.Samples\Rainbow.Services.Discovery.Samples.csproj", "{3698103F-D1DB-4F67-B4DD-992211CF5512}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery", "src\Rainbow.Services.Registery\Rainbow.Services.Registery.csproj", "{25D8F70B-79D2-41D7-A212-9774364EE20C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Registery", "src\Rainbow.Services.Registery\Rainbow.Services.Registery.csproj", "{25D8F70B-79D2-41D7-A212-9774364EE20C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery.Consul", "src\Rainbow.Services.Registery.Consul\Rainbow.Services.Registery.Consul.csproj", "{D23CCF3D-E360-4F0A-936F-6D268EEBBBC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Registery.Consul", "src\Rainbow.Services.Registery.Consul\Rainbow.Services.Registery.Consul.csproj", "{D23CCF3D-E360-4F0A-936F-6D268EEBBBC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery.AspNetCore", "src\Rainbow.Services.Registery.AspNetCore\Rainbow.Services.Registery.AspNetCore.csproj", "{E04E4FCB-F15E-403F-AE1D-207CA92FFC0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Registery.AspNetCore", "src\Rainbow.Services.Registery.AspNetCore\Rainbow.Services.Registery.AspNetCore.csproj", "{E04E4FCB-F15E-403F-AE1D-207CA92FFC0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Discovery", "src\Rainbow.Services.Discovery\Rainbow.Services.Discovery.csproj", "{072541CA-EE45-4D43-B03C-0EE9994D1E4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Discovery", "src\Rainbow.Services.Discovery\Rainbow.Services.Discovery.csproj", "{072541CA-EE45-4D43-B03C-0EE9994D1E4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Discovery.Consul", "src\Rainbow.Services.Discovery.Consul\Rainbow.Services.Discovery.Consul.csproj", "{4551F867-D1BB-47C4-8128-1052743428A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Discovery.Consul", "src\Rainbow.Services.Discovery.Consul\Rainbow.Services.Discovery.Consul.csproj", "{4551F867-D1BB-47C4-8128-1052743428A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Proxy", "src\Rainbow.Services.Proxy\Rainbow.Services.Proxy.csproj", "{C5990A2A-8063-45DB-92A6-412A84D61F72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Proxy", "src\Rainbow.Services.Proxy\Rainbow.Services.Proxy.csproj", "{C5990A2A-8063-45DB-92A6-412A84D61F72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Proxy.Http", "src\Rainbow.Services.Proxy.Http\Rainbow.Services.Proxy.Http.csproj", "{0579233A-1495-4B10-8FF0-91C62FDDD6E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Proxy.Http", "src\Rainbow.Services.Proxy.Http\Rainbow.Services.Proxy.Http.csproj", "{0579233A-1495-4B10-8FF0-91C62FDDD6E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4574F621-4FE3-4035-BC7F-5E66C38E92B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery.Test", "test\Rainbow.Services.Registery.Test\Rainbow.Services.Registery.Test.csproj", "{559602F2-7E12-4ABE-972A-D3C7E43013CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Registery.Test", "test\Rainbow.Services.Registery.Test\Rainbow.Services.Registery.Test.csproj", "{559602F2-7E12-4ABE-972A-D3C7E43013CA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rainbow.Services.Registery.Consul.GrpcHealthChecks", "src\Rainbow.Services.Registery.Consul.GrpcHealthChecks\Rainbow.Services.Registery.Consul.GrpcHealthChecks.csproj", "{802FA9B5-8750-4ADC-B392-934B576ED226}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Grpc.Samples", "samples\Rainbow.Services.Grpc.Samples\Rainbow.Services.Grpc.Samples.csproj", "{ED7F00B5-B46A-4AE6-B8F8-6669FEDBBAF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,10 +55,6 @@ Global
 		{D23CCF3D-E360-4F0A-936F-6D268EEBBBC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D23CCF3D-E360-4F0A-936F-6D268EEBBBC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D23CCF3D-E360-4F0A-936F-6D268EEBBBC4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{559602F2-7E12-4ABE-972A-D3C7E43013CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{559602F2-7E12-4ABE-972A-D3C7E43013CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{559602F2-7E12-4ABE-972A-D3C7E43013CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{559602F2-7E12-4ABE-972A-D3C7E43013CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E04E4FCB-F15E-403F-AE1D-207CA92FFC0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E04E4FCB-F15E-403F-AE1D-207CA92FFC0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E04E4FCB-F15E-403F-AE1D-207CA92FFC0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,6 +75,18 @@ Global
 		{0579233A-1495-4B10-8FF0-91C62FDDD6E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0579233A-1495-4B10-8FF0-91C62FDDD6E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0579233A-1495-4B10-8FF0-91C62FDDD6E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{559602F2-7E12-4ABE-972A-D3C7E43013CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{559602F2-7E12-4ABE-972A-D3C7E43013CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{559602F2-7E12-4ABE-972A-D3C7E43013CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{559602F2-7E12-4ABE-972A-D3C7E43013CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{802FA9B5-8750-4ADC-B392-934B576ED226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{802FA9B5-8750-4ADC-B392-934B576ED226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{802FA9B5-8750-4ADC-B392-934B576ED226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{802FA9B5-8750-4ADC-B392-934B576ED226}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED7F00B5-B46A-4AE6-B8F8-6669FEDBBAF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED7F00B5-B46A-4AE6-B8F8-6669FEDBBAF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED7F00B5-B46A-4AE6-B8F8-6669FEDBBAF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED7F00B5-B46A-4AE6-B8F8-6669FEDBBAF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,12 +96,14 @@ Global
 		{3698103F-D1DB-4F67-B4DD-992211CF5512} = {CAB809B0-CA74-47CB-AB8D-C5130D05E4D9}
 		{25D8F70B-79D2-41D7-A212-9774364EE20C} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
 		{D23CCF3D-E360-4F0A-936F-6D268EEBBBC4} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
-		{559602F2-7E12-4ABE-972A-D3C7E43013CA} = {4574F621-4FE3-4035-BC7F-5E66C38E92B2}
 		{E04E4FCB-F15E-403F-AE1D-207CA92FFC0B} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
 		{072541CA-EE45-4D43-B03C-0EE9994D1E4D} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
 		{4551F867-D1BB-47C4-8128-1052743428A8} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
 		{C5990A2A-8063-45DB-92A6-412A84D61F72} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
 		{0579233A-1495-4B10-8FF0-91C62FDDD6E3} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
+		{559602F2-7E12-4ABE-972A-D3C7E43013CA} = {4574F621-4FE3-4035-BC7F-5E66C38E92B2}
+		{802FA9B5-8750-4ADC-B392-934B576ED226} = {33F44BCD-7954-4369-80A2-A358167A3D8A}
+		{ED7F00B5-B46A-4AE6-B8F8-6669FEDBBAF0} = {CAB809B0-CA74-47CB-AB8D-C5130D05E4D9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5C9BDD1-CFA6-4EFD-8111-566B69B616EC}
