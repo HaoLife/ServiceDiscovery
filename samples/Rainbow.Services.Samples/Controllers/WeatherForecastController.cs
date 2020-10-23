@@ -35,5 +35,20 @@ namespace Rainbow.Services.Samples.Controllers
             })
             .ToArray();
         }
+
+        [HttpGet("{id}")]
+        public WeatherForecast Get(int id)
+        {
+            var index = id % Summaries.Length - 1;
+
+            var element = Summaries.ElementAt(index);
+
+            return new WeatherForecast()
+            {
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = index,
+                Summary = element
+            };
+        }
     }
 }

@@ -13,7 +13,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var builder = new ServiceRegisteryBuilder();
             services.AddSingleton<IServiceRegistery>((provider) => builder.Build());
-
             return builder;
         }
 

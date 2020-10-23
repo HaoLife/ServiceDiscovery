@@ -34,17 +34,19 @@ namespace Rainbow.Services.Discovery.Samples
             //services.AddRegistery(Configuration.GetSection("application"))
             //    .AddConsul(Configuration.GetSection("register:consul"));
 
-
             services.AddDiscovery()
                 .AddMemory(Configuration.GetSection("discovery:memory"))
-                .AddConsul(Configuration.GetSection("discovery:consul"), true, true);
+                // .AddConsul(Configuration.GetSection("discovery:consul"), true, true)
+                ;
 
             //services.AddProxyService()
 
             services.AddServiceProxy()
                 .AddHttp()
                 .AddRollPolling()
-                .AddHttpProxy<IWeatherForecastService>("samples")
+                .AddAutoProxy()
+                // .AddHttpProxy<IWeatherForecastService>("samples")
+                
                 ;
 
 

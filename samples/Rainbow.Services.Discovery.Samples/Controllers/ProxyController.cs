@@ -30,5 +30,18 @@ namespace Rainbow.Services.Discovery.Samples.Controllers
 
             return result;
         }
+
+
+        [HttpGet("{id}")]
+        public WeatherForecast Get(int id)
+        {
+            // Microsoft.AspNetCore.Routing.Template.TemplateParser.Parse
+
+               var service = proxy.Create<IWeatherForecastService>();
+
+            var result = service.Get(id);
+
+            return result;
+        }
     }
 }

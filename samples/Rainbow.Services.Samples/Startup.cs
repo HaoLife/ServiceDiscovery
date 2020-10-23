@@ -56,8 +56,10 @@ namespace Rainbow.Services.Samples
             //        .AddConsul(Configuration.GetSection("register:consul"));
             //});
 
-            services.AddRegistery(Configuration.GetSection("application"))
-                .AddConsul(Configuration.GetSection("register:consul"));
+            services
+                .AddRegistery(Configuration.GetSection("application"))
+                .AddConsul(Configuration.GetSection("register:consul"))
+                ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

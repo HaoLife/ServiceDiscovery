@@ -7,7 +7,7 @@ namespace Rainbow.Services.Registery
     public class ServiceApplication : IServiceApplication
     {
         public string Name { get; set; }
-        public string Host { get; set; }
+        public string Host { get; set; } = ServiceApplication.GetHostAddresss();
         public string Path { get; set; }
         public int Port { get; set; }
         public string Protocol { get; set; }

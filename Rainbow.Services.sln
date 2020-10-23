@@ -15,10 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery.Consul", "src\Rainbow.Services.Registery.Consul\Rainbow.Services.Registery.Consul.csproj", "{D23CCF3D-E360-4F0A-936F-6D268EEBBBC4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4574F621-4FE3-4035-BC7F-5E66C38E92B2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery.Test", "test\Rainbow.Services.Registery.Test\Rainbow.Services.Registery.Test.csproj", "{559602F2-7E12-4ABE-972A-D3C7E43013CA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery.AspNetCore", "src\Rainbow.Services.Registery.AspNetCore\Rainbow.Services.Registery.AspNetCore.csproj", "{E04E4FCB-F15E-403F-AE1D-207CA92FFC0B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Discovery", "src\Rainbow.Services.Discovery\Rainbow.Services.Discovery.csproj", "{072541CA-EE45-4D43-B03C-0EE9994D1E4D}"
@@ -28,6 +24,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Proxy", "src\Rainbow.Services.Proxy\Rainbow.Services.Proxy.csproj", "{C5990A2A-8063-45DB-92A6-412A84D61F72}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Proxy.Http", "src\Rainbow.Services.Proxy.Http\Rainbow.Services.Proxy.Http.csproj", "{0579233A-1495-4B10-8FF0-91C62FDDD6E3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4574F621-4FE3-4035-BC7F-5E66C38E92B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rainbow.Services.Registery.Test", "test\Rainbow.Services.Registery.Test\Rainbow.Services.Registery.Test.csproj", "{559602F2-7E12-4ABE-972A-D3C7E43013CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

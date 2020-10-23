@@ -1,9 +1,10 @@
 ﻿using Rainbow.Services.Discovery;
+using Rainbow.Services.Proxy;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rainbow.Services.Proxy
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class LoadBalancerExtensions
     {
