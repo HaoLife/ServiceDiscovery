@@ -15,6 +15,7 @@ namespace Rainbow.Services.Proxy.Http
         public HttpServiceProxyOptions Options { get; private set; }
         public List<IContentFormatter> Formatters => source.Formatters;
         public IList<ILoadBalancer> LoadBalancers => builder.LoadBalancers;
+        public List<IProxyRoute> Routes => source.Routes;
         public IServiceDiscovery Discovery { get; private set; }
 
 

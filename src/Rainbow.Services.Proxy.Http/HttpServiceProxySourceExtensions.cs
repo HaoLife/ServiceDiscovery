@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class HttpServiceProxySourceExtensions
     {
 
-        public static ServiceProxyBuilder AddHttpProxy<T>(this ServiceProxyBuilder builder, string serviceName, string prefix = null, string loadBalancer = null)
+        public static ServiceProxyBuilder AddHttpProxy<T>(this ServiceProxyBuilder builder, string serviceName, string loadBalancer = null)
         {
             return builder.AddProxy(new ServiceProxyDescriptor()
             {
@@ -17,7 +17,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 ProxyType = typeof(T),
                 ProviderName = ProxyDefaults.ProviderName,
                 LoadBalancer = loadBalancer,
-                Prefix = prefix,
             });
         }
     }

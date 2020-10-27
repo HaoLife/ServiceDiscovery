@@ -48,7 +48,7 @@ namespace Rainbow.Services.Discovery.Samples.Controllers
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var url = $"{element.Protocol}://{element.Host}:{element.Port}/WeatherForecast";
+            var url = $"{element.Protocol}://{element.Host}:{element.Port}/api/WeatherForecast";
             HttpResponseMessage response = httpClient.GetAsync(url).GetAwaiter().GetResult();
 
             var content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();

@@ -10,6 +10,5 @@ namespace Rainbow.Services.Proxy
         public Type ProxyType { get; set; }
         public string ProviderName { get; set; }
         public string LoadBalancer { get; set; }
-        public string Prefix { get; set; }
     }
 }

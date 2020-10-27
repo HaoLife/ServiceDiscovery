@@ -52,40 +52,43 @@ namespace Rainbow.Services.Proxy.Http
 
             var uriBuilder = endpoint.ToUriBuilder();
 
-            var proxyName = _descriptor.ProxyType.Name;
-            var httpMethod = _methods.Where(a => targetMethod.Name.ToUpper().StartsWith(a)).FirstOrDefault() ?? "";
-            var methodName = targetMethod.Name.ToLower();
+            var routeContext = new RouteContext()
+            {
+                Descriptor = _descriptor,
+                Args = args,
+                Options = this._provider.Options,
+                TargetMethod = targetMethod,
+            };
+            var result = new RouteResult();
 
-            if (this._provider.Options.IsFormatter && _descriptor.ProxyType.IsInterface && _descriptor.ProxyType.Name.StartsWith("I"))
+            foreach (var route in this._provider.Routes)
             {
-                proxyName = _descriptor.ProxyType.Name.Substring(1);
-            }
-            if (proxyName.EndsWith(this._provider.Options.Suffix))
-            {
-                proxyName = proxyName.Substring(0, proxyName.Length - this._provider.Options.Suffix.Length);
+                route.Handle(routeContext, result);
             }
 
             List<string> paths = new List<string>();
-            if (uriBuilder.Path.Any() && !uriBuilder.Path.EndsWith("/"))
+            var httpMethod = string.IsNullOrEmpty(result.HttpMethod) ? "POST" : result.HttpMethod;
+
+            if (uriBuilder.Path.Any() && !uriBuilder.Path.EndsWith("/") && !uriBuilder.Path.StartsWith("/"))
             {
                 paths.Add(uriBuilder.Path);
             }
-            if (!string.IsNullOrEmpty(this._descriptor.Prefix))
-            {
-                paths.Add(this._descriptor.Prefix);
-            }
-            paths.Add(proxyName);
 
-            if (!this._provider.Options.IsWebApi)
+            if (result.MethodRoute.StartsWith("/"))
             {
-                httpMethod = "POST";
-                paths.Add(methodName);
+                paths.Add(result.MethodRoute);
+            }else
+            {
+                paths.Add(result.ProxyRoute);
+                paths.Add(result.MethodRoute);
             }
+
             uriBuilder.Path = string.Join("/", paths);
 
             //这里使用什么输入格式，需要采用契约模式或者特性的方式实现
 
             var isGet = string.Compare(httpMethod, "GET", true) == 0;
+            //var isGet = false;
             var httpClient = new HttpClient();
             var contentType = "application/x-www-form-urlencoded";
 
@@ -106,21 +109,22 @@ namespace Rainbow.Services.Proxy.Http
                 }
             }
 
-            HttpResponseMessage response = null;
-            if (isGet && inputContext.Result != null)
-            {
-                uriBuilder.Query = inputContext.Result;
 
-                response = httpClient.GetAsync(uriBuilder.ToString()).GetAwaiter().GetResult();
+            var requestMessage = new HttpRequestMessage(new HttpMethod(httpMethod), uriBuilder.Uri);
+            if (inputContext.Result != null)
+            {
+                if (isGet)
+                {
+                    uriBuilder.Query = inputContext.Result;
+                    requestMessage.RequestUri = uriBuilder.Uri;
+                }
+                else
+                {
+                    requestMessage.Content = new StringContent(inputContext.Result);
+                }
             }
 
-            if (!isGet && inputContext.Result != null)
-            {
-                var requestMessage = new HttpRequestMessage();
-                requestMessage.Method = new HttpMethod(httpMethod);
-                requestMessage.Content = new StringContent(inputContext.Result);
-                response = httpClient.SendAsync(requestMessage).GetAwaiter().GetResult();
-            }
+            var response = httpClient.SendAsync(requestMessage).GetAwaiter().GetResult();
 
 
             var formaterContext = new InvokeOutputContext(response, targetMethod);

@@ -29,7 +29,10 @@ namespace Rainbow.Services.Proxy.Http.Formatters
             {
                 StreamReader reader = new StreamReader(responseStream);
                 var responseFromServer = reader.ReadToEnd();
-                context.Result = JsonSerializer.Deserialize(responseFromServer, context.OutType);
+                context.Result = JsonSerializer.Deserialize(responseFromServer, context.OutType, new JsonSerializerOptions()
+                {
+                    PropertyNameCaseInsensitive = true,
+                });
             }
         }
 

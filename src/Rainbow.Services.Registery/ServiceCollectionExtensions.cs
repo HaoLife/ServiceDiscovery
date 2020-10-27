@@ -3,6 +3,7 @@ using Rainbow.Services.Registery;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -27,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var app = configuration.Get<ServiceApplication>();
             builder.SetApplication(app);
 
-            services.AddSingleton<IServiceRegistery>((provider) => builder.Build());
+            services.TryAddSingleton<IServiceRegistery>((provider) => builder.Build());
 
             return builder;
         }

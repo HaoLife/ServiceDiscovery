@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -10,10 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static ServiceProxyBuilder AddServiceProxy(this IServiceCollection services)
         {
-            //services.AddRollPolling();
-            //services.AddDiscovery();
             var builder = new ServiceProxyBuilder();
-            services.AddSingleton<IServiceProxy>(provider => builder.Build(provider));
+            services.TryAddSingleton<IServiceProxy>(provider => builder.Build(provider));
             return builder;
         }
 

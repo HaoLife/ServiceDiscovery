@@ -9,11 +9,13 @@ namespace Rainbow.Services.Discovery.Samples.Services
 {
     [HttpProxy("samples")]
     //[Service("http://{sample}/weatherforecast)]
+    [HttpProxyRoute("api/{proxy}")]
     public interface IWeatherForecastService
     {
-        //[ProxyGet]
-        List<WeatherForecast> Get();
+        [HttpProxyGet]
+        List<WeatherForecast> Get(string key);
 
+        [HttpProxyGet("{id}")]
         WeatherForecast Get(int id);
     }
 }

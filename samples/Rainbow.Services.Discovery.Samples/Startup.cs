@@ -36,7 +36,7 @@ namespace Rainbow.Services.Discovery.Samples
 
             services.AddDiscovery()
                 .AddMemory(Configuration.GetSection("discovery:memory"))
-                // .AddConsul(Configuration.GetSection("discovery:consul"), true, true)
+                 .AddConsul(Configuration.GetSection("discovery:consul"), true, true)
                 ;
 
             //services.AddProxyService()
@@ -45,8 +45,8 @@ namespace Rainbow.Services.Discovery.Samples
                 .AddHttp()
                 .AddRollPolling()
                 .AddAutoProxy()
-                // .AddHttpProxy<IWeatherForecastService>("samples")
-                
+                //.AddHttpProxy<IWeatherForecastService>("samples", "api")
+
                 ;
 
 

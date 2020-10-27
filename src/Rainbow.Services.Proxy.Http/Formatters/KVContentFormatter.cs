@@ -31,6 +31,8 @@ namespace Rainbow.Services.Proxy.Http.Formatters
             var parms = context.Paramters;
             for (int i = 0; i < parms.Length; i++)
             {
+                if (context.Args[i] == null) continue;
+
                 dict.Add(parms[i].Name, context.Args[i].ToString());
             }
 

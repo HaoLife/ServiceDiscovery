@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Rainbow.Services.Proxy.Http.Formatters;
+using Rainbow.Services.Proxy.Http.Routes;
 using System;
 using System.Collections.Generic;
 
@@ -15,6 +16,12 @@ namespace Rainbow.Services.Proxy.Http
             new KVContentFormatter(),
             new TextContentFormatter(),
             new JsonContentFormatter(),
+        };
+
+        public List<IProxyRoute> Routes { get; set; } = new List<IProxyRoute>()
+        {
+            new AttributeRoute(),
+            new ContractRoute(),
         };
 
         public IServiceProxyProvider Build(IServiceProxyBuilder builder, IServiceProvider services)

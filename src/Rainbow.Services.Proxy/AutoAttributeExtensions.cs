@@ -31,7 +31,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     ServiceName = a.attr.Service,
                     LoadBalancer = a.attr.LoadBalancer,
-                    Prefix = a.attr.Prefix,
                     ProviderName = a.attr.ProviderName,
                     ProxyType = a.type,
                 })

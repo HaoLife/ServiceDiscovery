@@ -21,12 +21,12 @@ namespace Rainbow.Services.Discovery.Samples.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<WeatherForecast> Get([FromQuery(Name = "key")] string key)
         {
 
             var service = proxy.Create<IWeatherForecastService>();
 
-            var result = service.Get();
+            var result = service.Get(key);
 
             return result;
         }
@@ -37,7 +37,7 @@ namespace Rainbow.Services.Discovery.Samples.Controllers
         {
             // Microsoft.AspNetCore.Routing.Template.TemplateParser.Parse
 
-               var service = proxy.Create<IWeatherForecastService>();
+            var service = proxy.Create<IWeatherForecastService>();
 
             var result = service.Get(id);
 
