@@ -6,13 +6,13 @@ namespace Rainbow.Services.Proxy.Http
 {
     public interface IContentFormatter
     {
-        bool CanRead(IOutputContext context);
+        bool CanRead(IHttpOutputContext context);
 
-        void Read(IOutputContext context);
+        void Read(IHttpOutputContext context);
 
 
-        bool CanWrite(IInputContext context);
+        bool CanWrite(IHttpInputContext context);
 
-        void Write(IInputContext context);
+        void Write(IHttpInputContext context);
     }
 }

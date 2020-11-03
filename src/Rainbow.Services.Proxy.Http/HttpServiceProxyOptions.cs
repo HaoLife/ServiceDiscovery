@@ -8,8 +8,7 @@ namespace Rainbow.Services.Proxy.Http
     {
         public string Suffix { get; set; } = "Service";
         public bool IsFormatter { get; set; } = true;
-        //public bool IsWebApi { get; set; } = true;
-        //public bool IsAction { get; set; } = false;
+        public bool IsRestful { get; set; } = true;
 
         public string LoadBalancer { get; set; } = "RollPollingLoadBalancer";
     }

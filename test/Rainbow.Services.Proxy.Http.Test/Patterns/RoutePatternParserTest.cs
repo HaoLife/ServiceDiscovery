@@ -11,10 +11,8 @@ namespace Rainbow.Services.Proxy.Http.Test.Patterns
         [TestMethod]
         public void TestParse()
         {
-            var dict = new Dictionary<string, string> {
-                { "proxy","test" },
-                { "method","handle" }
-            };
+            var dict = new RouteValueDictionary(new { Proxy = "test", Method = "handle" });
+
             var result = RoutePatternParser.Parse("/{proxy}/{method}", dict);
 
             Assert.AreEqual(result, "/test/handle");

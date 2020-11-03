@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 
 namespace Rainbow.Services.Proxy.Http
 {
-    public interface IOutputContext
+    public interface IHttpOutputContext
     {
-        long ContentLength { get; }
-        string ContentType { get; }
+        HttpResponseMessage Response { get; }
 
         Type OutType { get; }
-        Stream Stream { get; }
 
         object Result { get; set; }
     }

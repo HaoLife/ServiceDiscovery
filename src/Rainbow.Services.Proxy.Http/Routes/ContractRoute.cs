@@ -15,31 +15,21 @@ namespace Rainbow.Services.Proxy.Http.Routes
         {
             if (!result.ProxyResult)
             {
-                var proxyName = context.Descriptor.ProxyType.Name;
-
-                //这里有不同的处理方式，1通过特性处理，2通过契约处理
-                if (context.Options.IsFormatter && context.Descriptor.ProxyType.IsInterface && context.Descriptor.ProxyType.Name.StartsWith("I"))
-                {
-                    proxyName = context.Descriptor.ProxyType.Name.Substring(1);
-                }
-                if (proxyName.EndsWith(context.Options.Suffix))
-                {
-                    proxyName = proxyName.Substring(0, proxyName.Length - context.Options.Suffix.Length);
-                }
-
                 result.ProxyResult = true;
-                result.ProxyRoute = proxyName;
+                result.ProxyRoute = context.Route[HttpProxyDefaults.ProxyName].ToString();
             }
+
 
 
             if (!result.MethodResult)
             {
                 var httpMethod = _methods.Where(a => context.TargetMethod.Name.ToUpper().StartsWith(a)).FirstOrDefault() ?? "POST";
-                var methodName = context.TargetMethod.Name.ToLower();
+                var methodName = context.Route[HttpProxyDefaults.MethodName].ToString();
 
                 result.MethodResult = true;
-                result.MethodRoute = methodName;
+                result.MethodRoute = context.Options.IsRestful ? "" : methodName;
                 result.HttpMethod = httpMethod;
+                result.ContentType = string.Compare(httpMethod, "GET", true) == 0 ? "application/x-www-form-urlencoded" : "application/json";
             }
         }
 

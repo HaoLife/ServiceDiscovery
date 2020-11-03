@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
@@ -9,36 +10,32 @@ namespace Rainbow.Services.Proxy.Http.Formatters
 {
     public class JsonContentFormatter : IContentFormatter
     {
-        public bool CanRead(IOutputContext context)
+        private static JsonSerializerOptions _options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+        public bool CanRead(IHttpOutputContext context)
+        {
+
+            if (context.Response.Content != null && context.Response.Content.Headers.ContentType == null) return false;
+
+            return context.Response.Content.Headers.ContentType.MediaType.StartsWith("application/json", StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public bool CanWrite(IHttpInputContext context)
         {
             if (context.ContentType == null) return false;
 
             return context.ContentType.StartsWith("application/json", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public bool CanWrite(IInputContext context)
+        public void Read(IHttpOutputContext context)
         {
-            if (context.ContentType == null || context.Paramters.Length != 1) return false;
+            var content = context.Response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            context.Result = JsonSerializer.Deserialize(content, context.OutType, _options);
 
-            return context.ContentType.StartsWith("application/json", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public void Read(IOutputContext context)
+        public void Write(IHttpInputContext context)
         {
-            using (var responseStream = context.Stream)
-            {
-                StreamReader reader = new StreamReader(responseStream);
-                var responseFromServer = reader.ReadToEnd();
-                context.Result = JsonSerializer.Deserialize(responseFromServer, context.OutType, new JsonSerializerOptions()
-                {
-                    PropertyNameCaseInsensitive = true,
-                });
-            }
-        }
-
-        public void Write(IInputContext context)
-        {
-            context.Result = JsonSerializer.Serialize(context.Args.First());
+            context.Request.Content = new StringContent(JsonSerializer.Serialize(context.Body));
         }
 
     }

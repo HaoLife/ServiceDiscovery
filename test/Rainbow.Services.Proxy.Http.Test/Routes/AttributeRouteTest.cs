@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rainbow.Services.Proxy.Attributes;
+using Rainbow.Services.Proxy.Http.Attributes;
 using Rainbow.Services.Proxy.Http.Routes;
 using System;
 using System.Collections.Generic;
@@ -27,9 +27,9 @@ namespace Rainbow.Services.Proxy.Http.Test.Routes
             var context = new RouteContext()
             {
                 TargetMethod = typeof(ITestService).GetMethod(nameof(ITestService.Get), new Type[] { typeof(string) }),
-                Args = new object[] { },
+                Route = new RouteValueDictionary(new { proxy = "test", method = nameof(ITestService.Get) }),
                 Descriptor = new ServiceProxyDescriptor() { ProxyType = typeof(ITestService), ServiceName = "samples", },
-                Options = new HttpServiceProxyOptions() { }
+                Parameter = new RouteValueDictionary(new { key = "111" })
             };
             var result = new RouteResult();
             route.Handle(context, result);

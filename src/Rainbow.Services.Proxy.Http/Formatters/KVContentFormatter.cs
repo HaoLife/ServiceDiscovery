@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 
 namespace Rainbow.Services.Proxy.Http.Formatters
 {
     public class KVContentFormatter : IContentFormatter
     {
-        public bool CanRead(IOutputContext context)
+        public bool CanRead(IHttpOutputContext context)
         {
             return false;
         }
 
-        public bool CanWrite(IInputContext context)
+        public bool CanWrite(IHttpInputContext context)
         {
             if (context.ContentType == null) return false;
 
@@ -20,25 +21,31 @@ namespace Rainbow.Services.Proxy.Http.Formatters
 
         }
 
-        public void Read(IOutputContext context)
+        public void Read(IHttpOutputContext context)
         {
             throw new Exception("不支持这种格式的输出内容");
         }
 
-        public void Write(IInputContext context)
+        public void Write(IHttpInputContext context)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            var parms = context.Paramters;
-            for (int i = 0; i < parms.Length; i++)
-            {
-                if (context.Args[i] == null) continue;
+            var values = context.Query.Select(a => $"{a.Key}={a.Value?.ToString() ?? ""}").ToList();
 
-                dict.Add(parms[i].Name, context.Args[i].ToString());
+
+            var queryPath = string.Join("&", values);
+
+            if (string.Compare(context.HttpMethod, "GET", true) == 0)
+            {
+                var builder = new UriBuilder(context.Request.RequestUri);
+
+                builder.Query = queryPath;
+                context.Request.RequestUri = builder.Uri;
+            }
+            else
+            {
+
+                context.Request.Content = new StringContent(queryPath);
             }
 
-            var value = string.Join("&", dict.Select(a => string.Format("{0}={1}", a.Key, Uri.EscapeDataString(a.Value.ToString()))));
-
-            context.Result = value;
         }
     }
 }

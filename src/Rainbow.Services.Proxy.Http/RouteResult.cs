@@ -14,5 +14,7 @@ namespace Rainbow.Services.Proxy.Http
 
         public string HttpMethod { get; set; }
 
+        public string ContentType { get; set; }
+
     }
 }

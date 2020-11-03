@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rainbow.Services.Proxy.Attributes
+namespace Rainbow.Services.Proxy.Http.Attributes
 {
     public class HttpProxyPostAttribute : HttpProxyMethodAttribute
     {
+
         public HttpProxyPostAttribute(string template = null)
-            : base("POST", template)
+            : this("application/json", template)
+        {
+
+        }
+        public HttpProxyPostAttribute(string contentType, string template = null)
+            : base("PUT", contentType, template)
         {
 
         }

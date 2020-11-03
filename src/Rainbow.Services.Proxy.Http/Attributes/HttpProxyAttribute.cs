@@ -1,7 +1,7 @@
 using System;
-using Rainbow.Services.Proxy.Http;
+using Rainbow.Services.Proxy.Attributes;
 
-namespace Rainbow.Services.Proxy.Attributes
+namespace Rainbow.Services.Proxy.Http.Attributes
 {
 
     [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class, Inherited = true, AllowMultiple = false)]

@@ -10,7 +10,7 @@ namespace Rainbow.Services.Proxy.Http.Patterns
     {
         private static Regex regex = new Regex(@"(\{([A-Za-z0-9]*)\})");
 
-        public static string Parse(string pattern, Dictionary<string, string> dict)
+        public static string Parse(string pattern, RouteValueDictionary dict)
         {
             var matchs = regex.Matches(pattern);
 
@@ -21,7 +21,7 @@ namespace Rainbow.Services.Proxy.Http.Patterns
                 if (!dict.ContainsKey(key)) throw new RoutePatternException(pattern, $"无法匹配参数 {item.Value}");
 
                 var value = dict[key];
-                path = path.Replace(item.Value, value);
+                path = path.Replace(item.Value, value.ToString());
 
             }
             return path;
