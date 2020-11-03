@@ -35,8 +35,6 @@ namespace Rainbow.Services.Discovery.Samples.Controllers
         [HttpGet("{id}")]
         public WeatherForecast Get(int id)
         {
-            // Microsoft.AspNetCore.Routing.Template.TemplateParser.Parse
-
             var service = proxy.Create<IWeatherForecastService>();
 
             var result = service.Get(id);

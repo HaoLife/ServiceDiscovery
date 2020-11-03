@@ -31,9 +31,6 @@ namespace Rainbow.Services.Discovery.Samples
 
             services.AddHealthChecks();
 
-            //services.AddRegistery(Configuration.GetSection("application"))
-            //    .AddConsul(Configuration.GetSection("register:consul"));
-
             services.AddDiscovery()
                 .AddMemory(Configuration.GetSection("discovery:memory"))
                  .AddConsul(Configuration.GetSection("discovery:consul"), true, true)
@@ -45,13 +42,8 @@ namespace Rainbow.Services.Discovery.Samples
                 .AddHttp()
                 .AddRollPolling()
                 .AddAutoProxy()
-                //.AddHttpProxy<IWeatherForecastService>("samples", "api")
-
                 ;
-
-
-            //services.AddHttpProxy()
-            //    .Add<IWeatherForecastService>("samples");
+            services.AddRollPolling();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,14 +65,6 @@ namespace Rainbow.Services.Discovery.Samples
                 endpoints.MapControllers();
             });
 
-            //app.ApplicationServices.UseRegistery();
-            //app.UseHealthChecks("/health");
-            //lifetime.ApplicationStopped.Register(() => app.ApplicationServices.UseDeregister());
-
-            //var ls = discovery.GetEndpoints("samples");
-
-            //var proxy = app.ApplicationServices.GetService<IServiceProxy>();
-            //var list = proxy.Create<IWeatherForecastService>().Get();
         }
     }
 }
